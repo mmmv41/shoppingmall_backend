@@ -3,7 +3,26 @@ server:
 
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/project_2
     username: root
     password: 12341234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/supercoding_project1?useUnicode=true&characterEncoding=UTF-8
+
+  jpa:
+    #    hibernate:
+    #      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        hbm2ddl:
+          auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+logging:
+  level:
+    com.tutorial: debug
+
+jwt:
+  secret_key: 548BVE2TX658G7S89G7H5487A12F254F9754DHE5R2HE6W49215G6487G47S2HJ5G8HAA98
