@@ -1,13 +1,13 @@
-package com.github.project2;
+package com.github.shopping_mall_be;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Project2ApplicationTests {
+class ShoppingMallBeApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }
