@@ -52,6 +52,19 @@ dependencies {
 
     //mySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+
+//    //jwt
+//    implementation 'io.jsonwebtoken:jjwt:0.12.5'
+//    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+//    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+//    //security
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    testImplementation 'org.springframework.security:spring-security-test'
+//
+//    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+//    implementation 'org.springframework.security:spring-security-config:6.2.0'
 }
 
 tasks.named('test') {
