@@ -12,4 +12,9 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findAllByStockGreaterThan(int stock, Pageable pageable);
     Optional<Product> findById(Integer productId);
+    // 가격 오름차순
+//    Page<Product> findAllByStockGreaterThanOrderByPriceAsc(int stock, Pageable pageable);
+
+    // 가격 내림차순
+//    Page<Product> findAllByStockGreaterThanOrderByPriceDesc(int stock, Pageable pageable);
 }
