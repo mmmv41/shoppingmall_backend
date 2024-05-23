@@ -1,6 +1,8 @@
 package com.github.shopping_mall_be.util;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,6 +11,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 // 이미지를 저장하는 유틸리티 클래스
@@ -36,6 +40,21 @@ public class FileStorageUtil {
         Files.copy(file.getInputStream(), copyLocation);
 
         return fileName;
+    }
+
+    public List<String> storeMultipleFiles(List<MultipartFile> files) throws IOException {
+        List<String> fileUrls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                if (!isMaxImageCountReached()) {
+                    String fileName = storeFile(file);
+                    fileUrls.add(fileName);
+                } else {
+                    throw new IllegalStateException("Maximum image count reached");
+                }
+            }
+        }
+        return fileUrls;
     }
 
     private boolean isMaxImageCountReached() {

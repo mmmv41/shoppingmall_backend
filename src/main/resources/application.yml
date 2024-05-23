@@ -9,5 +9,6 @@ spring:
     password: 12341234
 
 upload:
-  dir: uploads/
+  dir: C:\user\uploads
+
 

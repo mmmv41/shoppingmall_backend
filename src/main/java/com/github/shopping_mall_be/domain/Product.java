@@ -19,11 +19,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private int productId;
+    private Long productId;
 
     //User 엔티티와의 관계: user_id는 User 엔티티와의 외래 키 관계를 나타내므로, User 엔티티 클래스도 정의되어 있어야 합니다. 여기서는 ManyToOne 관계를 사용하여 Product 엔티티가 여러 User 엔티티와 연결될 수 있도록 합니다.
     @Column(name = "user_id", nullable = false)
-    private int userId;
+    private Long userId;
 
     @Column(name = "user_name", nullable = false)
     private String userName;
@@ -40,6 +40,10 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
+    // 옵션 추가
+    @Column(name = "product_option",nullable = false)
+    private String productOption;
+
     // JPA에서 날짜를 매핑할 때 사용. 필드를 db의 DATE유형에 매핑. 연도,월,일 정보만 저장(시간 정보는 무시)
     @Temporal(TemporalType.DATE)
     @Column(name = "start_date", nullable = false)
@@ -49,21 +53,10 @@ public class Product {
     @Column(name = "end_date", nullable = false)
     private Date endDate;
 
-//    @Temporal(TemporalType.DATE)
-//    private Date saleDate;
-
-//    private int quantity;
-
-    @Column(name = "total_price")
-    private int totalPrice;
-
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
-
     // 이미지 파일 경로를 저장할 필드
     @ElementCollection // 여러 이미지 경로를 저장하기 위해 사용. 컬렉션 매핑
     @CollectionTable(name = "ProductImage", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_path", nullable = false)
+    @Column(name = "image_path")
     private List<String> imagePaths = new ArrayList<>(); // 이미지 경로들을 저장하기 위한 리스트
 
     // 이미지의 최대 개수를 지정하기 위한 로직
@@ -75,7 +68,7 @@ public class Product {
         if (canAddImage()) {
             imagePaths.add(imagePath);
         } else {
-            throw new IllegalStateException("Maximum image count reached");
+            throw new IllegalStateException("사진은 10개까지 등록 가능합니다.");
         }
     }
 }
