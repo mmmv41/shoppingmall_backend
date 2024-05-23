@@ -40,7 +40,7 @@ public class OrderService {
             }
 
             OrderedItem orderedItem = new OrderedItem();
-            orderedItem.setProductId(product.getProductId());
+            orderedItem.setProduct(orderedItem.getProduct());
             orderedItem.setQuantity(cartItem.getQuantity());
             orderedItem.setDescription(product.getDescription());
             orderedItem.setPrice(product.getPrice());
@@ -55,5 +55,22 @@ public class OrderService {
             product.setStock(newStock);
             productRepository.save(product);
         }
+    }
+
+    public void deleteItemFromOrderById(Long orderedItemId) {
+        OrderedItem orderedItem = orderedItemRepository.findById(orderedItemId)
+                .orElseThrow(() -> new RuntimeException("OrderedItem not found"));
+
+        // OrderedItem과 연관된 Product의 재고를 업데이트
+        Product product = orderedItem.getProduct();
+        int returnedQuantity = orderedItem.getQuantity();
+        int currentStock = product.getStock();
+        product.setStock(currentStock + returnedQuantity);
+
+        // 상품 재고 업데이트
+        productRepository.save(product);
+
+        // 주문 항목 삭제
+        orderedItemRepository.delete(orderedItem);
     }
 }

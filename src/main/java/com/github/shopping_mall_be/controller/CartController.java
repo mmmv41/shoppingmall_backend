@@ -23,7 +23,7 @@ public class CartController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping
+    @PostMapping("/cart")
     public ResponseEntity<?> addItemToCart(@RequestBody CartItemDto cartItemDto, Principal principal) {
         String userEmail = principal.getName(); // Get the email of the logged-in user
         cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
@@ -64,6 +64,13 @@ public class CartController {
         orderService.createOrdersFromUserId(userId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/order/{orderedItemId}")
+    public ResponseEntity<?> deleteOrderItem(@PathVariable Long orderedItemId) {
+        orderService.deleteItemFromOrderById(orderedItemId);
+        return ResponseEntity.ok().build();
+    }
+
 
     @DeleteMapping("/cart/{cartItemId}")
     public ResponseEntity<?> deleteItemFromCartById(@PathVariable Long cartItemId) {

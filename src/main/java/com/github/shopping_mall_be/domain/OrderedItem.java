@@ -21,8 +21,9 @@ public class OrderedItem {
 //    @Column(name = "order_history_id")
 //    private Integer orderHistoryId;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private Integer quantity;
