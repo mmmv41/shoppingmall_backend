@@ -23,34 +23,35 @@ public class OrderService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    public void createOrdersFromCartId(Integer cartId) {
-        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+    public void createOrdersFromUserId(Long userId) {
+        List<CartItem> cartItems = cartItemRepository.findByUserUserId(userId);
 
         if (cartItems.isEmpty()) {
-            throw new RuntimeException("No CartItems found for cartId: " + cartId);
+            throw new RuntimeException("No CartItems found for userId: " + userId);
         }
 
         for (CartItem cartItem : cartItems) {
             Product product = productRepository.findById(cartItem.getProduct().getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
 
+            int newStock = product.getStock() - cartItem.getQuantity();
+            if (newStock < 0) {
+                throw new RuntimeException("구매하려는 상품의 재고가 충분하지 않습니다.");
+            }
+
             OrderedItem orderedItem = new OrderedItem();
             orderedItem.setProductId(product.getProductId());
             orderedItem.setQuantity(cartItem.getQuantity());
             orderedItem.setDescription(product.getDescription());
             orderedItem.setPrice(product.getPrice());
-            orderedItem.setStock(product.getStock());
+            orderedItem.setStock(newStock); // 주문 후 예상 재고를 설정
 
             int totalPrice = product.getPrice() * cartItem.getQuantity();
             orderedItem.setTotalPrice(totalPrice);
 
             orderedItemRepository.save(orderedItem);
 
-
-            int newStock = product.getStock() - cartItem.getQuantity();
-            if (newStock < 0) {
-                throw new RuntimeException("구매하려는 상품의 재고가 충분하지 않습니다.");
-            }
+            // 주문이 성공적으로 저장된 후에만 실제 상품의 재고를 감소시킵니다.
             product.setStock(newStock);
             productRepository.save(product);
         }

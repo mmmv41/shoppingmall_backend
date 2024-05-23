@@ -6,7 +6,7 @@ spring:
     username: root
     password: 12341234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/supercoding_project1?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/supercoding_project2?useUnicode=true&characterEncoding=UTF-8
 
   jpa:
     #    hibernate:

@@ -16,13 +16,13 @@ public class OrderedItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer orderedItemId;
+    private Long orderedItemId;
 
 //    @Column(name = "order_history_id")
 //    private Integer orderHistoryId;
 
     @Column(name = "product_id", nullable = false)
-    private Integer productId;
+    private Long productId;
 
     @Column(nullable = false)
     private Integer quantity;

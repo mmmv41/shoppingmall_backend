@@ -15,8 +15,12 @@ import java.util.Date;
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cartItemId;
-    private Integer cartId;
+    private Long cartItemId;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productId", referencedColumnName = "product_id")

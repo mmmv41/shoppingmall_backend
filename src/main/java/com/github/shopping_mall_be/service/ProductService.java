@@ -34,7 +34,7 @@ public class ProductService {
             dto.setDescription(product.getDescription());
             dto.setPrice(product.getPrice());
             dto.setStock(product.getStock());
-            //            dto.setImageUrl(product.getImageUrl());
+            dto.setImageUrl(product.getImageUrl());
             return dto;
         }).collect(Collectors.toList());
 
@@ -47,17 +47,18 @@ public class ProductService {
         return productDtos;
     }
 
-    public ProductResponseDto getProductById(Integer productId) {
-        return productRepository.findById(productId).filter(product -> product.getStock() > 0)
-                .map(product -> {
-                    ProductResponseDto dto = new ProductResponseDto();
-                    dto.setProductId(product.getProductId());
-                    dto.setProductName(product.getProductName());
-                    dto.setDescription(product.getDescription());
-                    dto.setPrice(product.getPrice());
-                    dto.setStock(product.getStock());
-//                    dto.setImageUrl(product.getImageUrl());
-                    return dto;
-                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+public ProductResponseDto getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .filter(product -> product.getStock() > 0)
+                .map(product -> new ProductResponseDto(
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getDescription(),
+                        product.getPrice(),
+                        product.getStock(),
+                        product.getImageUrl()
+                ))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }
