@@ -1,8 +1,6 @@
 package com.github.shopping_mall_be.util;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// 이미지를 저장하는 유틸리티 클래스
+// 이미지를 업로드하고 로컬 파일 시스템에 저장하는 유틸리티 클래스
 @Component
 public class FileStorageUtil {
 

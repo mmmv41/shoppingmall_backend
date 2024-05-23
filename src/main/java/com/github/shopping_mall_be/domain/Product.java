@@ -41,7 +41,7 @@ public class Product {
     private int stock;
 
     // 옵션 추가
-    @Column(name = "product_option",nullable = false)
+    @Column(name = "product_option")
     private String productOption;
 
     // JPA에서 날짜를 매핑할 때 사용. 필드를 db의 DATE유형에 매핑. 연도,월,일 정보만 저장(시간 정보는 무시)

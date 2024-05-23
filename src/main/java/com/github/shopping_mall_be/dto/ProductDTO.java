@@ -18,19 +18,24 @@ import java.util.List;
 public class ProductDTO {
 
     // 상품 등록을 위한 DTO
+    private Long userId;
     private String productName;
     private int price;
     private int stock;
     private String productOption;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
     private String description;
     private List<MultipartFile> images = new ArrayList<>();
     private String userName; // 현재 로그인된 사용자의 닉네임
+    private List<String> imagePaths = new ArrayList<>(); // 이미지 경로 추가
 
     // Product 엔티티에서 DTO로 변환하는 생성자
     public ProductDTO(Product product) {
@@ -41,6 +46,7 @@ public class ProductDTO {
         this.endDate = product.getEndDate();
         this.description = product.getDescription();
         this.productOption = product.getProductOption();
+        this.imagePaths = product.getImagePaths(); // 이미지 경로 설정
     }
 }
 

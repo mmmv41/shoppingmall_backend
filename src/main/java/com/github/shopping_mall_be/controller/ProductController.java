@@ -32,10 +32,12 @@ public class ProductController {
         productDTO.setImages(files);
 
         // 상품 등록 서비스 호출
-
         ProductDTO registeredProduct = productService.registerProduct(productDTO);
-        return productService.registerProduct(productDTO);
+
+        // 등록된 상품 정보 반환
+        return registeredProduct;
     }
+
 
 //        // 현재 로그인된 사용자의 닉네임 가져오기
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,8 +58,4 @@ public class ProductController {
                                  @RequestBody ProductDTO updatedProductDTO) throws IOException {
         return productService.updateProduct(productId, updatedProductDTO);
     }
-
-
-
-
 }

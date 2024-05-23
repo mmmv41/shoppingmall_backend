@@ -61,6 +61,7 @@ public class ProductService {
         return new ProductDTO(registeredProduct);
     }
 
+    // 이부분 더 추가 !!
     private void validateProductInfo(ProductDTO productDTO) {
         // 필요한 모든 상품 정보가 입력되었는지 확인하는 로직 추가
         // 예: productName, price, startDate, endDate, description 등
