@@ -100,7 +100,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("SecurityContext에 인증 정보 저장됨: {}", authentication.getName());
 
     }
