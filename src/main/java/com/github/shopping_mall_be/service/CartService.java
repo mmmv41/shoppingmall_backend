@@ -12,9 +12,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -92,6 +94,21 @@ public class CartService {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("CartItem not found"));
         cartItemRepository.delete(cartItem);
+    }
+
+    @Transactional
+    public List<CartItemDto> getCartItemsByUserId(Long userId) {
+        return cartItemRepository.findByUserUserId(userId).stream().map(cartItem -> {
+            CartItemDto dto = new CartItemDto();
+            dto.setProductId(cartItem.getProduct().getProductId());
+            dto.setProductName(cartItem.getProduct().getProductName());
+            dto.setQuantity(cartItem.getQuantity());
+            dto.setPrice(cartItem.getProduct().getPrice());
+            dto.setUserNickname(cartItem.getUser().getUser_nickname());
+            dto.setCartItemId(cartItem.getCartItemId());
+            dto.setUserId(cartItem.getUser().getUserId());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
 }

@@ -18,8 +18,9 @@ public class OrderedItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderedItemId;
 
-//    @Column(name = "order_history_id")
-//    private Integer orderHistoryId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)

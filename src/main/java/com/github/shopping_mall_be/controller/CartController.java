@@ -48,6 +48,9 @@ public class CartController {
                     dto.setProductId(item.getProduct().getProductId());
                     dto.setQuantity(item.getQuantity());
                     dto.setCartItemId(item.getCartItemId());
+                    dto.setUserNickname(item.getUser().getUser_nickname());
+                    dto.setPrice(item.getProduct().getPrice());
+                    dto.setProductName(item.getProduct().getProductName());
                     return dto;
                 }).collect(Collectors.toList());
         return ResponseEntity.ok(cartItemDtos);
@@ -60,22 +63,17 @@ public class CartController {
         return ResponseEntity.ok("장바구니 물품이 성공적으로 업데이트 되었습니다.");
     }
 
-    @PostMapping("/order/{userId}")
-    public ResponseEntity<?> orderItemsFromCart(@PathVariable Long userId) {
-        orderService.createOrdersFromUserId(userId);
-        return ResponseEntity.ok("상품이 성공적으로 구매되었습니다.");
-    }
-
-    @DeleteMapping("/order/{orderedItemId}")
-    public ResponseEntity<?> deleteOrderItem(@PathVariable Long orderedItemId) {
-        orderService.deleteItemFromOrderById(orderedItemId);
-        return ResponseEntity.ok("해당 구매 물건이 삭제되었습니다.");
-    }
-
 
     @DeleteMapping("/cart/{cartItemId}")
     public ResponseEntity<?> deleteItemFromCartById(@PathVariable Long cartItemId) {
         cartService.deleteItemFromCartById(cartItemId);
         return ResponseEntity.ok("장바구니에서 해당 물건이 삭제되었습니다.");
     }
+
+    @GetMapping("/cart/{userId}")
+    public List<CartItemDto> getCartItems(@PathVariable Long userId) {
+        return cartService.getCartItemsByUserId(userId);
+    }
+
+
 }

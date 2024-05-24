@@ -4,10 +4,7 @@ import com.github.shopping_mall_be.dto.User.Deleted;
 import com.github.shopping_mall_be.dto.User.Role;
 import com.github.shopping_mall_be.dto.User.UserDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,6 +15,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 @Entity //선언된 클래스를 DB 테이블과 매핑함
 @Table(name = "users")  //Entity와 매핑할 테이블을 지정함

@@ -3,13 +3,17 @@ package com.github.shopping_mall_be.service;
 import com.github.shopping_mall_be.domain.CartItem;
 import com.github.shopping_mall_be.domain.OrderedItem;
 import com.github.shopping_mall_be.domain.Product;
+import com.github.shopping_mall_be.domain.UserEntity;
+import com.github.shopping_mall_be.dto.OrderItemDto;
 import com.github.shopping_mall_be.repository.CartItemRepository;
 import com.github.shopping_mall_be.repository.OrderedItemRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
+import com.github.shopping_mall_be.repository.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -23,9 +27,14 @@ public class OrderService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    public void createOrdersFromUserId(Long userId) {
-        List<CartItem> cartItems = cartItemRepository.findByUserUserId(userId);
+    @Autowired
+    private UserRepository userRepository;
 
+    public void createOrdersFromUserId(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<CartItem> cartItems = cartItemRepository.findByUserUserId(userId);
         if (cartItems.isEmpty()) {
             throw new RuntimeException("No CartItems found for userId: " + userId);
         }
@@ -34,12 +43,14 @@ public class OrderService {
             Product product = productRepository.findById(cartItem.getProduct().getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
 
+
             int newStock = product.getStock() - cartItem.getQuantity();
             if (newStock < 0) {
                 throw new RuntimeException("구매하려는 상품의 재고가 충분하지 않습니다.");
             }
 
             OrderedItem orderedItem = new OrderedItem();
+            orderedItem.setUser(user);
             orderedItem.setProduct(cartItem.getProduct());
             orderedItem.setQuantity(cartItem.getQuantity());
             orderedItem.setDescription(product.getDescription());
@@ -73,4 +84,12 @@ public class OrderService {
         // 주문 항목 삭제
         orderedItemRepository.delete(orderedItem);
     }
+
+    public List<OrderItemDto> findByUserUserId(Long userId) {
+        List<OrderedItem> orderedItems = orderedItemRepository.findByUserUserId(userId);
+        return orderedItems.stream()
+                .map(OrderItemDto::new) // 이전에 언급한 대로 수정했습니다.
+                .collect(Collectors.toList());
+    }
+
 }

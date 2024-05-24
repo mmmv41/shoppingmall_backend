@@ -6,7 +6,7 @@ import com.github.shopping_mall_be.dto.User.NewUserDto;
 import com.github.shopping_mall_be.dto.User.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 
-public interface  UserService {
+public interface UserService {
 
     String encodePassword(String password);
     boolean matchesPassword(String rawPassword, String encodedPassword);
@@ -15,8 +15,9 @@ public interface  UserService {
     void unregister(String email);
 
     Token login(String email, String pw) throws Exception;
-    public String logout(HttpServletRequest request, String email);
+    String logout(HttpServletRequest request, String email);
 
     UserResponse getByEmail(String email);
+
 
 }

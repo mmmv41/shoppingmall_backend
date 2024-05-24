@@ -16,4 +16,6 @@ public interface UserRepository {
 
     public void deleteByEmail(String email);
 
+    Optional<UserEntity> findById(Long userId);
+
 }

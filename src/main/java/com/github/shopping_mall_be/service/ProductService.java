@@ -35,6 +35,7 @@ public class ProductService {
             dto.setPrice(product.getPrice());
             dto.setStock(product.getStock());
             dto.setImageUrl(product.getImageUrl());
+            dto.setUserNickName(product.getUser().getUser_nickname());
             return dto;
         }).collect(Collectors.toList());
 
@@ -57,7 +58,8 @@ public ProductResponseDto getProductById(Long productId) {
                         product.getDescription(),
                         product.getPrice(),
                         product.getStock(),
-                        product.getImageUrl()
+                        product.getImageUrl(),
+                        product.getUser().getUser_nickname()
                 ))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
