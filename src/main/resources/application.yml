@@ -24,5 +24,8 @@ logging:
   level:
     com.tutorial: debug
 
+upload:
+  dir: D:\ImageTest
+
 jwt:
   secret_key: 548BVE2TX658G7S89G7H5487A12F254F9754DHE5R2HE6W49215G6487G47S2HJ5G8HAA98

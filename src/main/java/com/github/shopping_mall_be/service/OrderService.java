@@ -8,6 +8,7 @@ import com.github.shopping_mall_be.dto.OrderItemDto;
 import com.github.shopping_mall_be.repository.CartItemRepository;
 import com.github.shopping_mall_be.repository.OrderedItemRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
+import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,11 @@ public class OrderService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserJpaRepository userJpaRepository;
 
     public void createOrdersFromUserId(Long userId) {
-        UserEntity user = userRepository.findById(userId)
+        UserEntity user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<CartItem> cartItems = cartItemRepository.findByUserUserId(userId);

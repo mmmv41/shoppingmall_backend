@@ -57,10 +57,7 @@ public class UserRepositoryImpl implements UserRepository{
         }
     }
 
-    @Override
-    public Optional<UserEntity> findById(Long userId) {
-        return Optional.empty();
-    }
+
 
 
 }

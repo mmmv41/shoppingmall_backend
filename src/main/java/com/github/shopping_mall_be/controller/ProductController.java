@@ -1,12 +1,21 @@
 package com.github.shopping_mall_be.controller;
 
+import com.github.shopping_mall_be.dto.ProductDTO;
 import com.github.shopping_mall_be.dto.ProductResponseDto;
+import com.github.shopping_mall_be.repository.User.UserRepository;
 import com.github.shopping_mall_be.service.ProductService;
+import com.github.shopping_mall_be.util.FileStorageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/api")
 @RestController
@@ -15,8 +24,11 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-//    @Autowired
-//    private FileStorageUtil fileStorageUtil;
+    @Autowired
+    private FileStorageUtil fileStorageUtil;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/products")
     public List<ProductResponseDto> getProducts(    // 페이지 당 8개의 상품 출력 , 페이지는 0부터 시작 . 만약 3번째 페이지 확인하고싶다면 , /api/products?page=2
@@ -31,21 +43,29 @@ public class ProductController {
         return productService.getProductById(productId);
     }
 
-//    @PostMapping("/register")
-//    public ProductDTO registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files) throws IOException {
-//        // 다중 파일을 ProductDTO에 설정
-//        productDTO.setImages(files);
-//
-//        // 상품 등록 서비스 호출
-//
-//        ProductDTO registeredProduct = productService.registerProduct(productDTO);
-//        return productService.registerProduct(productDTO);
-//    }
+    // 상품 등록
+    @PostMapping("/items/register")
+    public ProductDTO registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile>
+            files, Principal principal) throws IOException {
+        String userEmail = principal.getName();
+
+        // 다중 파일을 ProductDTO에 설정
+        productDTO.setImages(files);
+
+        // 상품 등록 서비스 호출
+        ProductDTO registeredProduct = productService.registerProduct(userEmail,productDTO);
+
+        // 등록된 상품 정보 반환
+        return registeredProduct;
+    }
+
+}
 
 //        // 현재 로그인된 사용자의 닉네임 가져오기
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        String userName = authentication.getName();
-//
+
+
 //        // 등록된 상품 정보에 현재 로그인된 사용자의 닉네임 추가
 //        registeredProduct.setUserName(userName);
 
@@ -63,4 +83,3 @@ public class ProductController {
 //    }
 
 
-}

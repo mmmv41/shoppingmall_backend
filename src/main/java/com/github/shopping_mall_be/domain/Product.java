@@ -38,7 +38,6 @@ public class Product {
     @Column(name = "product_option",nullable = false)
     private String productOption;
 
-    private Integer quantity;
 
     @Column(name = "start_date")
     @Temporal(TemporalType.DATE)
@@ -48,28 +47,27 @@ public class Product {
     @Temporal(TemporalType.DATE)
     private Date endDate;
 
-//    @ElementCollection // 여러 이미지 경로를 저장하기 위해 사용. 컬렉션 매핑
-//    @CollectionTable(name = "ProductImage", joinColumns = @JoinColumn(name = "product_id"))
-//    @Column(name = "image_path")
-//    private List<String> imagePaths = new ArrayList<>(); // 이미지 경로들을 저장하기 위한 리스트
-//
-//    public boolean canAddImage() { // 이미지를 추가할 수 있는지 여부 확인. 최대 이미지 개수 초과하지않는지 확인.
-//        return imagePaths.size() < 10;
-//    }
-//
-//    public void addImage(String imagePath) { // 상품에 이미지 추가. 추가 전에 canAddImage()메서드로 최대 이미지 개수 확인.
-//        if (canAddImage()) {
-//            imagePaths.add(imagePath);
-//        } else {
-//            throw new IllegalStateException("사진은 10개까지 등록 가능합니다.");
-//        }
-//    }
+    @ElementCollection // 여러 이미지 경로를 저장하기 위해 사용. 컬렉션 매핑
+    @CollectionTable(name = "ProductImage", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "image_path")
+    private List<String> imagePaths = new ArrayList<>(); // 이미지 경로들을 저장하기 위한 리스트
+
+    public boolean canAddImage() { // 이미지를 추가할 수 있는지 여부 확인. 최대 이미지 개수 초과하지않는지 확인.
+        return imagePaths.size() < 10;
+    }
+
+    public void addImage(String imagePath) { // 상품에 이미지 추가. 추가 전에 canAddImage()메서드로 최대 이미지 개수 확인.
+        if (canAddImage()) {
+            imagePaths.add(imagePath);
+        } else {
+            throw new IllegalStateException("사진은 10개까지 등록 가능합니다.");
+        }
+    }
 
 
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+
 
 }
