@@ -4,6 +4,7 @@ import com.github.shopping_mall_be.dto.Jwt.ResponseToken;
 import com.github.shopping_mall_be.dto.Jwt.Token;
 import com.github.shopping_mall_be.dto.User.NewUserDto;
 import com.github.shopping_mall_be.dto.User.UserDto;
+import com.github.shopping_mall_be.dto.User.getUserDto;
 import com.github.shopping_mall_be.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,15 @@ public class UserController {
     public ResponseEntity<String> unregister(@PathVariable String email) {
         userService.unregister(email);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("회원 탈퇴 되었습니다.");
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<getUserDto> getUserById(@PathVariable Long userId) {
+        getUserDto getuserDto = userService.getUserById(userId);
+        if (getuserDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(getuserDto);
     }
 
     //이메일 유효성 검사

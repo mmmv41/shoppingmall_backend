@@ -1,12 +1,15 @@
 package com.github.shopping_mall_be.service.User;
 
 import com.github.shopping_mall_be.controller.UserResponse;
+import com.github.shopping_mall_be.domain.UserEntity;
 import com.github.shopping_mall_be.dto.Jwt.JwtProvider;
 import com.github.shopping_mall_be.dto.Jwt.Token;
 import com.github.shopping_mall_be.dto.User.NewUserDto;
 import com.github.shopping_mall_be.dto.User.Role;
 import com.github.shopping_mall_be.dto.User.UserDto;
+import com.github.shopping_mall_be.dto.User.getUserDto;
 import com.github.shopping_mall_be.repository.Jwt.TokenRepository;
+import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final TokenRepository tokenRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder encoder;
@@ -157,6 +161,23 @@ public class UserServiceImpl implements UserService {
         authorities.add(new SimpleGrantedAuthority("ROLE_" + memberRole.name()));
         log.info("role : " + authorities);
         return authorities;
+    }
+
+    @Override
+    public getUserDto getUserById(Long userId) {
+        UserEntity userEntity = userJpaRepository.findByUserId(userId);
+        if (userEntity == null) {
+            return null;
+        }
+        return getUserDto.builder()
+                .email(userEntity.getEmail())
+                .user_nickname(userEntity.getUser_nickname())
+                .user_phone(userEntity.getUser_phone())
+                .user_addr(userEntity.getUser_addr())
+                .user_img(userEntity.getUser_img())
+                .role(userEntity.getUser_role())
+                .deleted(userEntity.getDeleted())
+                .build();
     }
 
 }
