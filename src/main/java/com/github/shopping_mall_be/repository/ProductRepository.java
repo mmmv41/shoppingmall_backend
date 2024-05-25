@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    Page<Product> findAllByStockGreaterThan(int stock, Pageable pageable);
+    Page<Product> findAllByStockGreaterThanAndProductStatus(int stock, int productStatus, Pageable pageable);
     Optional<Product> findById(Long productId);
+    List<Product> findByUserUserId(Long userId);
     List<Product> findByEndDateAfterAndStartDateBeforeOrStartDate(Date endDate, Date startDate1, Date startDate2);
 }

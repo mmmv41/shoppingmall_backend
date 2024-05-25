@@ -16,4 +16,7 @@ public class CartItemDto {
     private String userNickname;
     private Long cartItemId;
     private Long userId;
+    private String productOption;
+    private Integer productStatus;
+    private Integer Stock;
 }

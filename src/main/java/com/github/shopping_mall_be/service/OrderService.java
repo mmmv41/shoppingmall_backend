@@ -11,6 +11,7 @@ import com.github.shopping_mall_be.repository.ProductRepository;
 import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +30,11 @@ public class OrderService {
     private CartItemRepository cartItemRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private UserJpaRepository userJpaRepository;
 
@@ -45,6 +50,10 @@ public class OrderService {
         for (CartItem cartItem : cartItems) {
             Product product = productRepository.findById(cartItem.getProduct().getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            if (product.getProductStatus() != 1) {
+                throw new RuntimeException("구매하려는 상품이 구매 가능한 상태가 아닙니다.");
+            }
 
 
             int newStock = product.getStock() - cartItem.getQuantity();
@@ -71,12 +80,59 @@ public class OrderService {
         }
     }
 
-    public void deleteItemFromOrderById(Long orderedItemId) {
+    public void createOrderFromCartItemId(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("CartItem not found"));
+
+        Product product = productRepository.findById(cartItem.getProduct().getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (product.getProductStatus() != 1) {
+            throw new RuntimeException("구매하려는 상품이 구매 가능한 상태가 아닙니다.");
+        }
+
+        int newStock = product.getStock() - cartItem.getQuantity();
+        if (newStock < 0) {
+            throw new RuntimeException("구매하려는 상품의 재고가 충분하지 않습니다.");
+        }
+
+        OrderedItem orderedItem = new OrderedItem();
+        orderedItem.setUser(cartItem.getUser());
+        orderedItem.setProduct(cartItem.getProduct());
+        orderedItem.setQuantity(cartItem.getQuantity());
+        orderedItem.setDescription(product.getDescription());
+        orderedItem.setPrice(product.getPrice());
+        orderedItem.setStock(newStock);
+
+        int totalPrice = product.getPrice() * cartItem.getQuantity();
+        orderedItem.setTotalPrice(totalPrice);
+
+        orderedItemRepository.save(orderedItem);
+
+        product.setStock(newStock);
+        productRepository.save(product);
+    }
+
+    public void deleteItemFromOrderById(Long orderedItemId, String email, String password) {
+        // 사용자 찾기 (이메일로 조회)
+        UserEntity user = userRepository.findByEmail2(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(password, user.getUser_password())) {
+            throw new RuntimeException("Incorrect password.");
+        }
+
         OrderedItem orderedItem = orderedItemRepository.findById(orderedItemId)
                 .orElseThrow(() -> new RuntimeException("OrderedItem not found"));
 
-        // OrderedItem과 연관된 Product의 재고를 업데이트
+        // 주문 항목과 연관된 상품의 소유자 확인
         Product product = orderedItem.getProduct();
+        if (!product.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("You do not have permission to delete this order item.");
+        }
+
+        // OrderedItem과 연관된 Product의 재고를 업데이트
         int returnedQuantity = orderedItem.getQuantity();
         int currentStock = product.getStock();
         product.setStock(currentStock + returnedQuantity);
@@ -91,7 +147,7 @@ public class OrderService {
     public List<OrderItemDto> findByUserUserId(Long userId) {
         List<OrderedItem> orderedItems = orderedItemRepository.findByUserUserId(userId);
         return orderedItems.stream()
-                .map(OrderItemDto::new) // 이전에 언급한 대로 수정했습니다.
+                .map(OrderItemDto::new)
                 .collect(Collectors.toList());
     }
 

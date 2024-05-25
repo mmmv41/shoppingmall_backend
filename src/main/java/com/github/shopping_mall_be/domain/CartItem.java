@@ -26,6 +26,7 @@ public class CartItem {
     @JoinColumn(name = "productId", referencedColumnName = "product_id")
     private Product product;
 
+
     private Integer quantity;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
