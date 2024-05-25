@@ -60,7 +60,7 @@ public class CartController {
     @PutMapping("/cart/{cartItemId}")
     public ResponseEntity<?> updateCartItem(@PathVariable Long cartItemId, @RequestBody CartItemDto cartItemDto) {
         cartService.updateCartItem(cartItemId, cartItemDto);
-        return ResponseEntity.ok("장바구니 물품이 성공적으로 업데이트 되었습니다.");
+        return ResponseEntity.ok("장바구니 물품이 성공적으로 수정 되었습니다.");
     }
 
 

@@ -18,7 +18,7 @@ import java.util.List;
 public class ProductDTO {
 
     // 상품 등록을 위한 DTO
-//    private Long userId;  // UserEntity의 ID를 참조
+    //userId는 토큰 입력하면 자동으로 받아와줌
     private String productName;
     private int price;
     private int stock;
@@ -34,12 +34,11 @@ public class ProductDTO {
     private Date endDate;
 
     private String description;
-    private List<MultipartFile> images = new ArrayList<>();
+    private List<MultipartFile> files = new ArrayList<>();
     private List<String> imagePaths = new ArrayList<>(); // 이미지 경로 추가
 
     // Product 엔티티에서 DTO로 변환하는 생성자
     public ProductDTO(Product product) {
-
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.stock = product.getStock();
@@ -47,7 +46,6 @@ public class ProductDTO {
         this.endDate = product.getEndDate();
         this.description = product.getDescription();
         this.productOption = product.getProductOption();
-//        this.userId = product.getUser().getUserId();
         this.userNickName = product.getUser().getUser_nickname();
         this.imagePaths = product.getImagePaths(); // 이미지 경로 설정
     }

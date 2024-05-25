@@ -38,6 +38,9 @@ public class Product {
     @Column(name = "product_option",nullable = false)
     private String productOption;
 
+    @Column(name = "product_status")
+    private int productStatus;
+
 
     @Column(name = "start_date")
     @Temporal(TemporalType.DATE)
@@ -64,7 +67,12 @@ public class Product {
         }
     }
 
+    public void clearImages() {
+        this.imagePaths.clear();
+    }
 
+
+    // image_url 은 상품 등록시 첫번째로 올린 사진을 가져옴
     @Column(name = "image_url")
     private String imageUrl;
 
