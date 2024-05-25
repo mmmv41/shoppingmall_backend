@@ -4,6 +4,7 @@ import com.github.shopping_mall_be.controller.UserResponse;
 import com.github.shopping_mall_be.dto.Jwt.Token;
 import com.github.shopping_mall_be.dto.User.NewUserDto;
 import com.github.shopping_mall_be.dto.User.UserDto;
+import com.github.shopping_mall_be.dto.User.getUserDto;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
@@ -18,6 +19,6 @@ public interface UserService {
     String logout(HttpServletRequest request, String email);
 
     UserResponse getByEmail(String email);
-
+    getUserDto getUserById(Long id);
 
 }
