@@ -94,6 +94,10 @@ files 통해 사진 업로드 필요 .
 product_Status 속성에 EndDate가 현재 시간과 같거나 , 현재시간보다 늦다면 1을 현재 시간보다 빠르다면 (판매 기한이 끝났다면) 0을 반환  
 추가로 config 패키지의 ProductStatusScheduler을 통해 매일 00시에 해당 product_Status 속성을 체크하여 , 판매 기한이 끝나면 자동으로 0으로 설정 
 Beaber Token 에 입력한 토큰에 따른 user_id 를 조회해서 자동으로 user_id에 값 할당 
+추가로 , FileController 에yaml 파일에 올려둔 
+upload:
+  dir: D:\ImageTest 
+경로에 파일이 업로드 되므로 , 테스트 시에 , 따로 설정하시면 됩니다 . 
 
 
 - 쇼핑몰 판매 물품 수정
