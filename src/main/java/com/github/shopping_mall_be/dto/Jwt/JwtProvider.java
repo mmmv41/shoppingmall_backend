@@ -38,7 +38,7 @@ public class JwtProvider {
 
     private Key key;
     private final ObjectMapper objectMapper;
-
+    
     @PostConstruct
     public void Init() {
 

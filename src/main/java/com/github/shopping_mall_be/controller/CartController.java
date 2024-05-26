@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-//@Tag(name = "CartController", description = "장바구니 관리 API")
+@Tag(name = "CartController", description = "장바구니 관리 API")
 public class CartController {
 
     @Autowired
     private CartService cartService;
 
     @PostMapping("/cart")
-//    @Operation(summary = "장바구니에 상품 추가", description = "사용자의 장바구니에 상품을 추가합니다.")
+    @Operation(summary = "장바구니에 상품 추가", description = "사용자의 장바구니에 상품을 추가합니다.")
     public ResponseEntity<?> addItemToCart(
             @Parameter(description = "장바구니에 추가할 상품 정보", required = true) @RequestBody CartItemDto cartItemDto,
             @AuthenticationPrincipal Principal principal) {
