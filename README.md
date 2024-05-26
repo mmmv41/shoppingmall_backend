@@ -108,6 +108,17 @@ http://localhost:8080/api/products/24
 물품 등록시 필요한 입력값들 + email , password 값 입력 
 물품 수정 위해서는 , 등록된 물품의 user_Id 에 해당하는 email , password 값 입력해야 수정가능 
 
+입력 값 예시
+{
+  "productName": "새로운 상품",
+  "price": 40000000,
+  "stock": 30,
+  "startDate": "2024-05-03",
+  "endDate": "2024-05-31",
+  "productOption" : "abc",
+  "description": "새로운 상품 설명입니다"
+}
+
 
 - 판매중인 물건 조회 
 /api/products/user/{userId} [GET] 
@@ -122,7 +133,9 @@ http://localhost:8080/api/products/22
 
 productId에 따라 , 등록된 물건 삭제 가능. productId에 따라 물품을 등록한 사용자의 userId에 해당하는  email과 password를 입력해야 삭제 가능 
 
+
 <Cart>
+
 
 - 장바구니 담기
 
@@ -176,7 +189,8 @@ http://localhost:8080/api/cart/5
 
 
 
-- 장바구니 내역 삭제 
+- 장바구니 내역 삭제
+  
 /api/cart/{cartItemId} [delete]
 http://localhost:8080/api/cart/6
 
@@ -191,6 +205,7 @@ http://localhost:8080/api/cart/6
 http://localhost:8080/api/order/7
 
 원하는 cartItemId 를 통해 선택적 주문 가능 , 구매하려는 상품 productStatus = 1이어야 구매가능 ,구매 후 재고가 0이상이어야 구매 가능 , 구매 후 상품의 수량 줄어듬  
+
 
 - 장바구니 전체 주문 
 
