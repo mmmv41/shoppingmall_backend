@@ -29,6 +29,13 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+
+    //springdoc
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.16'
+
+
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

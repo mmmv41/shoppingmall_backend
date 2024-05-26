@@ -6,6 +6,12 @@ import com.github.shopping_mall_be.dto.User.NewUserDto;
 import com.github.shopping_mall_be.dto.User.UserDto;
 import com.github.shopping_mall_be.dto.User.getUserDto;
 import com.github.shopping_mall_be.service.User.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,20 +22,22 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/api") //내부에 선언한 메서드의 URL 리소스 앞에 @RequestMapping의 값이 공통 값으로 추가됨.
+@RequestMapping("/api")
 @RequiredArgsConstructor
-@RestController //사용자 요청을 제어하는 controller 클래스
+@RestController
+@Tag(name = "User API", description = "User API")
 public class UserController {
 
     private final UserService userService;
 
-
-
-
+    @Operation(summary = "회원가입", description = "회원가입을 위한 엔드포인트입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
     @PostMapping("/signup")
     public ResponseEntity<?> join(@Validated @RequestBody NewUserDto userDto, BindingResult result) {
-        try{
-
+        try {
             if (!isValidEmail(userDto.getEmail())) {
                 result.rejectValue("email", "email.invalid", "이메일 형식에 맞게 입력하세요.");
                 log.info("이메일 형식에 맞게 입력하세요.");
@@ -49,42 +57,58 @@ public class UserController {
             }
 
             UserDto saveUser = userService.register(userDto);
-
             return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.of(saveUser));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+
+
+    @Operation(summary = "로그인", description = "로그인을 위한 엔드포인트입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDto login) {
         try {
             String email = login.getEmail();
             String password = login.getUser_password();
             Token token = userService.login(email, password);
-            ResponseEntity.ok().body(ResponseToken.of(token));
-
-            return new ResponseEntity<>("로그인 되었습니다.", HttpStatus.CREATED);
-
+            return ResponseEntity.ok().body(ResponseToken.of(token));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+    @Operation(summary = "로그아웃", description = "로그아웃을 위한 엔드포인트입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody UserDto userDto) {
         String res = userService.logout(request, userDto.getEmail());
         return ResponseEntity.ok().body(res);
     }
 
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 위한 엔드포인트입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
     @DeleteMapping("/unregister/{email}")
     public ResponseEntity<String> unregister(@PathVariable String email) {
         userService.unregister(email);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("회원 탈퇴 되었습니다.");
     }
 
+    @Operation(summary = "회원 정보 조회", description = "회원 ID로 회원 정보를 조회하는 엔드포인트입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "404", description = "Not Found")
+    })
     @GetMapping("/users/{userId}")
     public ResponseEntity<getUserDto> getUserById(@PathVariable Long userId) {
         getUserDto getuserDto = userService.getUserById(userId);
@@ -111,5 +135,4 @@ public class UserController {
         String phoneRegex = "^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})+$";
         return user_phone.matches(phoneRegex);
     }
-
 }
