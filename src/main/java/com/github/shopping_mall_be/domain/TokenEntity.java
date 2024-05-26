@@ -1,10 +1,7 @@
 package com.github.shopping_mall_be.domain;
 
 import com.github.shopping_mall_be.dto.Jwt.Token;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +27,10 @@ public class TokenEntity {
     private LocalDateTime refreshTokenTime;
 
     private String userEmail;
+//    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "email", nullable = false)
+//    private UserEntity user;
+
 
     public static TokenEntity from(Token token) {
         return TokenEntity.builder()

@@ -7,6 +7,7 @@ import com.github.shopping_mall_be.dto.CartItemDto;
 import com.github.shopping_mall_be.dto.CartTotalPriceDto;
 import com.github.shopping_mall_be.service.CartService;
 import com.github.shopping_mall_be.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,6 +29,7 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/cart")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "장바구니에 상품 추가", description = "사용자의 장바구니에 상품을 추가합니다.")
     public ResponseEntity<?> addItemToCart(
             @Parameter(description = "장바구니에 추가할 상품 정보", required = true) @RequestBody CartItemDto cartItemDto,
@@ -38,6 +40,7 @@ public class CartController {
     }
 
     @GetMapping("/cart/total-price/{userId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "특정 사용자의 장바구니 총 금액 조회", description = "userId에 따른 특정 사용자의 장바구니에 담긴 모든 상품의 총 금액을 조회합니다.")
     public ResponseEntity<?> getTotalPrice(
             @Parameter(description = "사용자 ID", required = true) @PathVariable Long userId) {
@@ -46,6 +49,7 @@ public class CartController {
     }
 
     @GetMapping("/cart")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "모든 장바구니 항목 조회", description = "모든 사용자의 장바구니 항목을 조회합니다. 해당 요청은 구현시 테스트를 위해 만들었습니다.")
     public ResponseEntity<List<CartItemDto>> getAllCartItems() {
         List<CartItem> cartItems = cartService.getAllCartItems();
@@ -65,6 +69,7 @@ public class CartController {
     }
 
     @PutMapping("/cart/{cartItemId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "장바구니 항목 수정", description = "cartItemId에 따라 장바구니에 담긴 특정 항목을 수정합니다.")
     public ResponseEntity<?> updateCartItem(
             @Parameter(description = "장바구니 항목 ID", required = true) @PathVariable Long cartItemId,
@@ -74,6 +79,7 @@ public class CartController {
     }
 
     @DeleteMapping("/cart/{cartItemId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "장바구니 항목 삭제", description = "cartItemId에 따라 장바구니에 담긴 특정 항목을 삭제합니다.")
     public ResponseEntity<?> deleteItemFromCartById(
             @Parameter(description = "장바구니 항목 ID", required = true) @PathVariable Long cartItemId) {
@@ -82,6 +88,7 @@ public class CartController {
     }
 
     @GetMapping("/cart/{userId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "특정 사용자의 장바구니 항목 조회", description = "userId에 따라 특정 사용자의 장바구니 항목을 조회합니다.")
     public List<CartItemDto> getCartItems(
             @Parameter(description = "사용자 ID", required = true) @PathVariable Long userId) {

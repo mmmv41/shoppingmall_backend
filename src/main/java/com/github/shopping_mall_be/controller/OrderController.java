@@ -4,6 +4,7 @@ import com.github.shopping_mall_be.domain.OrderedItem;
 import com.github.shopping_mall_be.dto.OrderItemDto;
 import com.github.shopping_mall_be.repository.OrderedItemRepository;
 import com.github.shopping_mall_be.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/ordertotal/{userId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "카트의 아이템으로 주문 생성", description = "사용자 ID를 통해 카트의 모든 아이템으로 주문을 생성합니다.")
     public ResponseEntity<?> orderItemsFromCart(@Parameter(description = "사용자 ID", required = true) @PathVariable Long userId) {
         orderService.createOrdersFromUserId(userId);
@@ -36,6 +38,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/order/{orderedItemId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "주문 아이템 삭제", description = "주문된 아이템을 삭제합니다.")
     public ResponseEntity<?> deleteOrderItem(@Parameter(description = "주문된 아이템 ID", required = true) @PathVariable Long orderedItemId,
                                              @Parameter(description = "이메일", required = true) @RequestParam String email,
@@ -45,6 +48,7 @@ public class OrderController {
     }
 
     @PostMapping("/order/{cartItemId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "카트 아이템으로 주문 생성", description = "카트 아이템 ID를 이용하여 주문을 생성합니다.")
     public ResponseEntity<String> createOrder(@Parameter(description = "카트 아이템 ID", required = true) @PathVariable Long cartItemId) {
         try {
@@ -57,6 +61,7 @@ public class OrderController {
 
 
     @GetMapping("/order/{userId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "사용자별 주문 아이템 조회", description = "사용자 ID로 주문된 모든 아이템을 조회합니다.")
     public List<OrderItemDto> getOrderItemsByUserId(@Parameter(description = "사용자 ID", required = true) @PathVariable Long userId) {
         return orderService.findByUserUserId(userId);

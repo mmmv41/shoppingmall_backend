@@ -11,6 +11,7 @@ import com.github.shopping_mall_be.service.ProductService;
 import com.github.shopping_mall_be.util.FileStorageUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,7 @@ public class ProductController {
     private UserRepository userRepository;
 
     @GetMapping("/products")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 목록 조회", description = "페이지와 정렬 방식에 따른 상품 목록을 조회합니다.")
     public List<ProductResponseDto> getProducts(
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
@@ -51,18 +53,21 @@ public class ProductController {
     }
 
     @GetMapping("/products/{productId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 상세 조회", description = "상품 ID에 해당하는 상품의 상세 정보를 조회합니다.")
     public DetailProductDto getProductById(@Parameter(description = "상품 ID") @PathVariable Long productId) {
         return productService.getProductById(productId);
     }
 
     @GetMapping("/products/user/{userId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "사용자 ID로 상품 조회", description = "사용자 ID에 해당하는 사용자가 등록한 상품 목록을 조회합니다.")
     public List<ProductResponseDto> getProductsByUserId(@Parameter(description = "사용자 ID") @PathVariable Long userId) {
         return productService.getProductsByUserId(userId);
     }
 
     @PostMapping("/products/register")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
     public ProductDTO registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files, Principal principal) throws IOException {
         String userEmail = principal.getName();
@@ -74,7 +79,10 @@ public class ProductController {
         return registeredProduct;
     }
 
+
+
     @PutMapping("/products/{productId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 정보 수정", description = "상품 ID에 해당하는 상품의 정보를 수정합니다.")
     public ResponseEntity<?> updateProduct(
             @Parameter(description = "상품 ID") @PathVariable Long productId,
@@ -111,6 +119,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/products/{productId}")
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 삭제", description = "상품 ID에 해당하는 상품을 삭제합니다.")
     public String deleteProduct(@Parameter(description = "상품 ID") @PathVariable Long productId, @RequestParam String email, @RequestParam String password) {
         productService.deleteProduct(productId, email, password);
