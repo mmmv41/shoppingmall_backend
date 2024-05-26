@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -99,6 +100,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
     @DeleteMapping("/unregister/{email}")
+    @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<String> unregister(@PathVariable String email) {
         userService.unregister(email);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("회원 탈퇴 되었습니다.");
@@ -110,6 +112,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found")
     })
     @GetMapping("/users/{userId}")
+    @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<getUserDto> getUserById(@PathVariable Long userId) {
         getUserDto getuserDto = userService.getUserById(userId);
         if (getuserDto == null) {
