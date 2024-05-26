@@ -19,7 +19,7 @@ public class Product {
     @Column(name = "product_id")
     private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 

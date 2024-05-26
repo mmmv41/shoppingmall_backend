@@ -147,7 +147,14 @@ public class OrderService {
     public List<OrderItemDto> findByUserUserId(Long userId) {
         List<OrderedItem> orderedItems = orderedItemRepository.findByUserUserId(userId);
         return orderedItems.stream()
-                .map(OrderItemDto::new)
+                .map(orderedItem -> {
+                    Product product = orderedItem.getProduct();
+                    // ProductRepository에서 상품의 최신 재고 정보를 가져옵니다.
+                    Product latestProductInfo = productRepository.findById(product.getProductId())
+                            .orElseThrow(() -> new RuntimeException("Product not found"));
+                    // OrderItemDto 생성자에 상품의 최신 재고 정보를 포함하여 객체를 생성합니다.
+                    return new OrderItemDto(orderedItem, latestProductInfo.getStock());
+                })
                 .collect(Collectors.toList());
     }
 

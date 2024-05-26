@@ -69,8 +69,15 @@ dependencies {
 
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'org.springframework.security:spring-security-config:6.2.0'
+
+    //mariadb
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.2'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.named('bootJar'){
+    mainClass = 'com.github.shopping_mall_be.ShoppingMallBeApplication'
 }

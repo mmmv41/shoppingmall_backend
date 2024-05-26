@@ -233,6 +233,9 @@ public class ProductService {
         product.setEndDate(productDTO.getEndDate());
         product.setProductOption(productDTO.getProductOption());
 
+        Date now = new Date();
+        product.setProductStatus(product.getEndDate().compareTo(now) >= 0 ? 1 : 0);
+
         // 이미지 처리
         List<MultipartFile> files = productDTO.getFiles() != null ? productDTO.getFiles() : new ArrayList<>();
         List<String> imagePaths = files.stream()

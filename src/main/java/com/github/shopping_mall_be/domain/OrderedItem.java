@@ -18,8 +18,8 @@ public class OrderedItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderedItemId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id",  nullable = false)
     private UserEntity user;
 
     @ManyToOne
