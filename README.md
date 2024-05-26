@@ -1,9 +1,16 @@
+Swagger UI 
+http://3.37.22.98:8080/swagger-ui/index.html
+
+
+*현재 Swagger 내부에서 물품 등록 , 물품 수정 기능이 작동이 안됩니다 . (value값 형태 문제) postman에서는 정상작동 되니,  postman에서 물품 등록 , 수정 해주시고 다른 기능은 swagger에서 부탁드립니다 !*
+
 <User>
 
 - 회원가입 
 
 /api/signup [post]
-http://localhost:8080/api/signup
+http://3.37.22.98:8080/api/signup
+
 
 이메일 유효성 검사 (이메일 형식 확인 --> user@test.com) + 회원가입된 이메일 있으면 예외처리 
 비밀번호 유효성 검사 (8~20자리, 영문자와 숫자 조합 --> 123a5678 or ABCD1234)
@@ -22,7 +29,7 @@ http://localhost:8080/api/signup
 - 로그인
 
 /api/login [post]
-http://localhost:8080/api/login
+http://3.37.22.98:8080/api/login
 
 입력 값 예시
 {
@@ -35,7 +42,7 @@ http://localhost:8080/api/login
 - 로그아웃 
 
 /api/logout [post]
-http://localhost:8080/api/logout
+http://3.37.22.98:8080/api/logout
 입력 값 예시
 {
     "email": "user3@example.com"
@@ -44,7 +51,7 @@ http://localhost:8080/api/logout
 - 회원탈퇴 
 
 /api/unregister/{email} [delete]
-http://localhost:8080/api/unregister/user3@example.com
+http://3.37.22.98:8080/api/unregister/user3@example.com
 
 입력 값 예시 
 Authorization Beaber Token에 
@@ -54,7 +61,7 @@ Authorization Beaber Token에
 - 유저 정보 조회 
 
 /api/users/{userId} [GET]
-http://localhost:8080/api/users/2
+http://3.37.22.98:8080/api/users/2
 
 userId에 따른 유저 정보 조회 
 Authorization Beaber Token에 
@@ -66,7 +73,7 @@ Authorization Beaber Token에
 - 쇼핑몰 전체 물건 조회 
 
 /api/products [get]   
-http://localhost:8080/api/products?page=2&sort=asc 
+http://3.37.22.98:8080/api/products?page=2&sort=asc 
 
 페이지당 8개의 상품 출력, 페이지는 0부터 시작 즉 page = 2는 3번째 페이지를 의미
 sort = asc -> 오름차순 sort = desc -> 내림차순
@@ -76,14 +83,14 @@ productStatus가 1인 물건만 조회가능
 - 쇼핑몰 상세 물건 조회 
 
 /api/products/{product_id} [get]
-http://localhost:8080/api/products/18
+http://3.37.22.98:8080/api/products/18
 
 재고 0 이상인 물건만 조회 가능 
 
 - 쇼핑몰 판매 물품 등록 
 
 /api/products/register [POST]
-http://localhost:8080/api/products/register
+http://3.37.22.98:8080/api/products/register
 
 입력 값 예시 
 
@@ -103,7 +110,7 @@ upload:
 - 쇼핑몰 판매 물품 수정
 
 /api/products/{productId} [PUT]
-http://localhost:8080/api/products/24
+http://3.37.22.98:8080/api/products/24
 
 물품 등록시 필요한 입력값들 + email , password 값 입력 
 물품 수정 위해서는 , 등록된 물품의 user_Id 에 해당하는 email , password 값 입력해야 수정가능 
@@ -122,14 +129,14 @@ http://localhost:8080/api/products/24
 
 - 판매중인 물건 조회 
 /api/products/user/{userId} [GET] 
-http://localhost:8080/api/products/user/1
+http://3.37.22.98:8080/api/products/user/1
 
 사용자 ID에 따라 , 등록한 물건 조회 가능 
 
 
 - 등록중인 물건 삭제
 /api/products/{productId} [DELETE]
-http://localhost:8080/api/products/22 
+http://3.37.22.98:8080/api/products/22 
 
 productId에 따라 , 등록된 물건 삭제 가능. productId에 따라 물품을 등록한 사용자의 userId에 해당하는  email과 password를 입력해야 삭제 가능 
 
@@ -141,7 +148,7 @@ productId에 따라 , 등록된 물건 삭제 가능. productId에 따라 물품
 
 
 /api/cart [POST] 
-http://localhost:8080/api/cart
+http://3.37.22.98:8080/api/cart
 물건 중에서도 product_status 가 1인 물건 (판매중인 물건)만 장바구니 담기 가능
 
 입력 값 : 
@@ -159,7 +166,7 @@ http://localhost:8080/api/cart
 
 
 /api/cart/total-price/{userId} [get]
-http://localhost:8080/api/cart/6 
+http://3.37.22.98:8080/api/cart/6 
 
 마찬가지로 productStatus가 1인 제품만을 고려해서 계산 . 
 
@@ -167,7 +174,7 @@ http://localhost:8080/api/cart/6
 - 장바구니 리스트 조회 
 
 /api/cart/{userId}[GET]
-http://localhost:8080/api/cart/6
+http://3.37.22.98:8080/api/cart/6
 
 userId에 해당하는 장바구니 리스트 조회 , 만약 장바구니에 담긴 상태에서 다른 사람이 해당 물건을 구매한다해도 , stock 0 상태로 남아있음 
 
@@ -177,7 +184,7 @@ userId에 해당하는 장바구니 리스트 조회 , 만약 장바구니에 �
 
 
 /api/cart/{cart_id} [put]
-http://localhost:8080/api/cart/5
+http://3.37.22.98:8080/api/cart/5
 
 해당 cart_id가 존재하는경우 처리 , productStatus가 1인 제품만 업데이트 가능 , 
 {
@@ -192,7 +199,7 @@ http://localhost:8080/api/cart/5
 - 장바구니 내역 삭제
   
 /api/cart/{cartItemId} [delete]
-http://localhost:8080/api/cart/6
+http://3.37.22.98:8080/api/cart/6
 
 원하는 cart_id 의 장바구니 내역을 삭제 가능 
 
@@ -202,7 +209,7 @@ http://localhost:8080/api/cart/6
 - 장바구니에서 선택 주문
 
 /api/order/{orderedItemId} 
-http://localhost:8080/api/order/7
+http://3.37.22.98:8080/api/order/7
 
 원하는 cartItemId 를 통해 선택적 주문 가능 , 구매하려는 상품 productStatus = 1이어야 구매가능 ,구매 후 재고가 0이상이어야 구매 가능 , 구매 후 상품의 수량 줄어듬  
 
@@ -210,7 +217,7 @@ http://localhost:8080/api/order/7
 - 장바구니 전체 주문 
 
 /api/ordertotal/{userId}
-http://localhost:8080/api/ordertotal/6
+http://3.37.22.98:8080/api/ordertotal/6
 
 구매하려는 상품 productStatus = 1이어야 구매가능 , 구매 후 재고가 0이상이어야 구매 가능 , 구매 후 상품의 수량 줄어듬  
 
@@ -219,7 +226,7 @@ http://localhost:8080/api/ordertotal/6
 - 주문내역 삭제 
 
 /api/order/{orderedItemId} [delete]
-http://localhost:8080/api/order/11
+http://3.37.22.98:8080/api/order/11
 
 원하는 구매 물건 삭제 가능 ,  삭제 시에 구매했던 물건 재고 구매 전으로 업데이트 .
 주문한 사용자의 userId에 해당하는  email과 password를 입력해야 삭제 가능 
@@ -228,7 +235,7 @@ http://localhost:8080/api/order/11
 - 주문내역 조회 
 
 /api/order/{userId} [get]
-http://localhost:8080/api/order/1
+http://3.37.22.98:8080/api/order/1
 
 userId에 따라 해당하는 유저의 주문내역 조회 
 
