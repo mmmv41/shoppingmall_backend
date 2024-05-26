@@ -18,7 +18,7 @@ public class CartItem {
     private Long cartItemId;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity user;
 

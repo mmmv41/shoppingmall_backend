@@ -51,11 +51,11 @@ public class UserEntity implements Serializable {
 
     @Column(name = "created_at")
     @CreationTimestamp  //INSERT 할 때 자동으로 값을 채워줌
-    private LocalDateTime created_at = LocalDateTime.now();
+    private LocalDateTime created_at;
 
     @Column(name = "updated_at")
     @UpdateTimestamp    //UPDATE 쿼리 발생시 해당 시간 값으로 쿼리 생성
-    private LocalDateTime updated_at = LocalDateTime.now();
+    private LocalDateTime updated_at;
 
     @Column(name = "user_is_deleted")
     @Enumerated(EnumType.STRING)
@@ -89,4 +89,10 @@ public class UserEntity implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderedItem> orderedItems;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products;
 }

@@ -30,7 +30,7 @@ OncePerRequestFilter -->
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String[] whitelist = {"/api/signup", "/api/logout","/api/login", "/api/logout"};
+    private static final String[] whitelist = {"/api/signup", "/api/logout","/api/login", "/swagger-ui/**", "/swagger-ui/index.html","/error","/v3/**"};
     private final JwtProvider jwtProvider;
     private final JwtService jwtService;
 
@@ -57,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //refreshToken이 없다면 accessToken을 재발급
             checkAccessTokenAndAuthentication(request, response, filterChain);
         }
+
     }
 
     public boolean checkPathFree(String requestURI){
@@ -103,6 +104,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("SecurityContext에 인증 정보 저장됨: {}", authentication.getName());
 
     }
+
 
 
 

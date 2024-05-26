@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
-
+// 오류 처리 핸들러
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)

@@ -51,6 +51,11 @@ public class SecurityConfig {
                         .requestMatchers("/unregister").permitAll()
                         .requestMatchers("/unregister/**").permitAll()
                         .requestMatchers("/unregister/{user_email}").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/v3/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, jwtService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter,JwtAuthenticationFilter.class);
