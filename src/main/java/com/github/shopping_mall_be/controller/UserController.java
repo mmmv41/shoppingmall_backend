@@ -67,10 +67,6 @@ public class UserController {
 
 
     @Operation(summary = "로그인", description = "로그인을 위한 엔드포인트입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created"),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
-    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDto login) {
         try {
@@ -105,6 +101,7 @@ public class UserController {
         userService.unregister(email);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("회원 탈퇴 되었습니다.");
     }
+
 
     @Operation(summary = "회원 정보 조회", description = "회원 ID로 회원 정보를 조회하는 엔드포인트입니다.")
     @ApiResponses(value = {
