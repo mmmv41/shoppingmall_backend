@@ -85,5 +85,5 @@ tasks.named('test') {
 
 tasks.named('bootJar'){
     mainClass = 'com.github.shopping_mall_be.ShoppingMallBeApplication'
-    destinationDirectory = file("${project.rootDir}/../shoppingmall_backend/jar")
+    destinationDirectory = file("${project.rootDir}/../shoppingmall_backend/myjar")
 }
