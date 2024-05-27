@@ -46,7 +46,7 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Token createToken(Authentication authentication, List<GrantedAuthority> authorities) {
+    public Token createToken(Authentication authentication, List<GrantedAuthority> authorities, Long user_Id) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(AUTHORITIES_KEY, authorities.stream()
                 .map(GrantedAuthority::getAuthority)
@@ -56,13 +56,13 @@ public class JwtProvider {
 
         long now = (new Date()).getTime();
 
-        //AccessToken 생성 (30분)
-        Date accessTokenExpire = new Date(System.currentTimeMillis() + 1000 * 60 * 10000);
+        // AccessToken 생성 (30분)
+        Date accessTokenExpire = new Date(now + 1000 * 60 * 30);
         claims.put("exp", accessTokenExpire);
         String accessToken = createAccessToken(claims, accessTokenExpire);
 
-        //RefreshToken 생성 (1시간)
-        Date refreshTokenExpire = new Date(System.currentTimeMillis() + 1000 * 60 * 20000);
+        // RefreshToken 생성 (1시간)
+        Date refreshTokenExpire = new Date(now + 1000 * 60 * 60);
         claims.put("exp", refreshTokenExpire);
         String refreshToken = createRefreshToken(claims, refreshTokenExpire);
 
@@ -70,14 +70,49 @@ public class JwtProvider {
                 .grantType("Bearer ")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .accessTokenTime((accessTokenExpire.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
-                .refreshTokenTime((refreshTokenExpire.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
+                .accessTokenTime(accessTokenExpire.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .refreshTokenTime(refreshTokenExpire.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .userEmail(authentication.getName())
+                .user_Id(user_Id)  // 여기에서 userId를 설정합니다.
                 .build();
 
         log.info("token in JwtProvider : " + token);
         return token;
     }
+
+
+//    public Token createToken(Authentication authentication, List<GrantedAuthority> authorities) {
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put(AUTHORITIES_KEY, authorities.stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.toList()));
+//
+//        claims.put(EMAIL_CLAIMS, authentication.getName());
+//
+//        long now = (new Date()).getTime();
+//
+//        //AccessToken 생성 (30분)
+//        Date accessTokenExpire = new Date(System.currentTimeMillis() + 1000 * 60 * 10000);
+//        claims.put("exp", accessTokenExpire);
+//        String accessToken = createAccessToken(claims, accessTokenExpire);
+//
+//        //RefreshToken 생성 (1시간)
+//        Date refreshTokenExpire = new Date(System.currentTimeMillis() + 1000 * 60 * 20000);
+//        claims.put("exp", refreshTokenExpire);
+//        String refreshToken = createRefreshToken(claims, refreshTokenExpire);
+//
+//        Token token = Token.builder()
+//                .grantType("Bearer ")
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .accessTokenTime((accessTokenExpire.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
+//                .refreshTokenTime((refreshTokenExpire.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
+//                .userEmail(authentication.getName())
+//                .build();
+//
+//        log.info("token in JwtProvider : " + token);
+//        return token;
+//    }
 
     public String createAccessToken(Map<String, Object> claims, Date expiredTime) {
         long now = new Date().getTime();

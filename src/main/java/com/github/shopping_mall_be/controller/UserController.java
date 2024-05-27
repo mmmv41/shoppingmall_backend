@@ -108,6 +108,8 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "404", description = "Not Found")
     })
+
+
     @GetMapping("/users/{userId}")
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<getUserDto> getUserById(@PathVariable Long userId) {

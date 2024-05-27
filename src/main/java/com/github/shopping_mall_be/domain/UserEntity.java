@@ -84,6 +84,7 @@ public class UserEntity implements Serializable {
                 .user_phone(this.user_phone)
                 .user_addr(this.user_addr)
                 .user_img(this.user_img)
+                .user_Id(this.userId)
                 .build();
     }
 

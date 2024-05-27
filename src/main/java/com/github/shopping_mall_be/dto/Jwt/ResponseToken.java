@@ -17,14 +17,16 @@ public class ResponseToken {
     private String accessToken;
     private String refreshToken;
     private LocalDateTime accessTokenTime;
+    private Long user_Id;
 
 
     @Builder
-    public ResponseToken(String userEmail, String accessToken, String refreshToken, LocalDateTime accessTokenTime) {
+    public ResponseToken(String userEmail, String accessToken, String refreshToken, LocalDateTime accessTokenTime, Long user_Id) {
         this.userEmail = userEmail;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.accessTokenTime = accessTokenTime;
+        this.user_Id = user_Id;
     }
 
     public static ResponseToken of(Token token){
@@ -33,6 +35,7 @@ public class ResponseToken {
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .accessTokenTime(token.getAccessTokenTime())
+                .user_Id(token.getUser_Id())
                 .build();
     }
 
