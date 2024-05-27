@@ -25,11 +25,9 @@ public class TokenEntity {
     private String refreshToken;
     private LocalDateTime accessTokenTime;
     private LocalDateTime refreshTokenTime;
-
     private String userEmail;
-//    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
-//    @JoinColumn(name = "email", nullable = false)
-//    private UserEntity user;
+    private Long user_Id;
+
 
 
     public static TokenEntity from(Token token) {
@@ -41,6 +39,7 @@ public class TokenEntity {
                 .refreshToken(token.getRefreshToken())
                 .refreshTokenTime(token.getRefreshTokenTime())
                 .userEmail(token.getUserEmail())
+                .user_Id(token.getUser_Id())
                 .build();
     }
 

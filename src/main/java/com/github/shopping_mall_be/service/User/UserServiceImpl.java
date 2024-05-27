@@ -76,18 +76,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Token login(String email, String pw) throws Exception {
-        try{
+        try {
             UserDto userDto = userRepository.findByEmail(email);
 
-            if(userDto != null) {
-                if(encoder.matches(pw, userDto.getUser_password())) {
+            if (userDto != null) {
+                if (encoder.matches(pw, userDto.getUser_password())) {
                     Authentication authentication = new UsernamePasswordAuthenticationToken(email, pw);
                     List<GrantedAuthority> authoritiesForUser = getAuthoritiesForUser(userDto);
 
                     Token findToken = tokenRepository.findByUserEmail(email);
 
-                    //JWT 생성
-                    Token token = jwtProvider.createToken(authentication, authoritiesForUser);
+                    // JWT 생성
+                    Token token = jwtProvider.createToken(authentication, authoritiesForUser, userDto.getUser_Id());
 
                     if (findToken == null) {
                         log.info("발급한 토큰이 없습니다. 새로운 토큰을 발급합니다.");
@@ -101,26 +101,69 @@ public class UserServiceImpl implements UserService {
                                 .refreshToken(token.getRefreshToken())
                                 .refreshTokenTime(token.getRefreshTokenTime())
                                 .userEmail(token.getUserEmail())
+                                .user_Id(userDto.getUser_Id())  // 여기에서 userId를 설정합니다.
                                 .build();
-
-                        log.info("로그인에 성공했습니다.");
-
                     }
+                    log.info("로그인에 성공했습니다.");
                     return tokenRepository.save(token);
-                }
-                else{
+                } else {
                     throw new Exception("비밀번호가 일치하지 않습니다.");
                 }
-            }
-            else{
+            } else {
                 throw new UserNotFoundException();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
-
     }
+
+//    @Override
+//    public Token login(String email, String pw) throws Exception {
+//        try{
+//            UserDto userDto = userRepository.findByEmail(email);
+//
+//            if(userDto != null) {
+//                if(encoder.matches(pw, userDto.getUser_password())) {
+//                    Authentication authentication = new UsernamePasswordAuthenticationToken(email, pw);
+//                    List<GrantedAuthority> authoritiesForUser = getAuthoritiesForUser(userDto);
+//
+//                    Token findToken = tokenRepository.findByUserEmail(email);
+//
+//                    //JWT 생성
+//                    Token token = jwtProvider.createToken(authentication, authoritiesForUser);
+//
+//                    if (findToken == null) {
+//                        log.info("발급한 토큰이 없습니다. 새로운 토큰을 발급합니다.");
+//                    } else {
+//                        log.info("이미 발급된 토큰이 있습니다. 토큰을 업데이트합니다.");
+//                        token = Token.builder()
+//                                .id(findToken.getId())
+//                                .grantType(token.getGrantType())
+//                                .accessToken(token.getAccessToken())
+//                                .accessTokenTime(token.getAccessTokenTime())
+//                                .refreshToken(token.getRefreshToken())
+//                                .refreshTokenTime(token.getRefreshTokenTime())
+//                                .userEmail(token.getUserEmail())
+//                                .build();
+//
+//                        log.info("로그인에 성공했습니다.");
+//
+//                    }
+//                    return tokenRepository.save(token);
+//                }
+//                else{
+//                    throw new Exception("비밀번호가 일치하지 않습니다.");
+//                }
+//            }
+//            else{
+//                throw new UserNotFoundException();
+//            }
+//        }
+//        catch (Exception e) {
+//            throw e;
+//        }
+//
+//    }
 
     public String logout(HttpServletRequest request, String email){
         try{
