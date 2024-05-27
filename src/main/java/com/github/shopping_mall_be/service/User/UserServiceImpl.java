@@ -8,6 +8,7 @@ import com.github.shopping_mall_be.dto.User.NewUserDto;
 import com.github.shopping_mall_be.dto.User.Role;
 import com.github.shopping_mall_be.dto.User.UserDto;
 import com.github.shopping_mall_be.dto.User.getUserDto;
+import com.github.shopping_mall_be.repository.Jwt.TokenJpaRepository;
 import com.github.shopping_mall_be.repository.Jwt.TokenRepository;
 import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final TokenRepository tokenRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder encoder;
+    private final TokenJpaRepository tokenJpaRepository;
 
     @Override
     public String encodePassword(String password) { //패스워드 암호화
@@ -135,8 +137,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public void unregister(String email) {
+        tokenJpaRepository.deleteByUserEmail(email);
+
         UserDto userDto = userRepository.findByEmail(email);
         if (userDto != null) {
             userRepository.deleteByEmail(email);

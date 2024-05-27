@@ -43,7 +43,7 @@ logging:
   config: classpath:logback-spring-prod.xml
 
 upload:
-  dir: D:\ImageTest
+  dir: C:\ImageTests
 
 jwt:
   secret_key: 548BVE2TX658G7S89G7H5487A12F254F9754DHE5R2HE6W49215G6487G47S2HJ5G8HAA98

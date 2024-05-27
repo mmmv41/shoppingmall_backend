@@ -11,5 +11,5 @@ public interface  TokenJpaRepository extends JpaRepository<TokenEntity, Long> {
     Optional<TokenEntity> findByUserEmail(String userEmail);
     TokenEntity findByAccessToken(String accessToken);
     void deleteById(Long id);
-
+    void deleteByUserEmail(String userEmail);
 }
