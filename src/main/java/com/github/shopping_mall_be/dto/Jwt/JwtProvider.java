@@ -57,12 +57,12 @@ public class JwtProvider {
         long now = (new Date()).getTime();
 
         // AccessToken 생성 (30분)
-        Date accessTokenExpire = new Date(now + 1000 * 60 * 30);
+        Date accessTokenExpire = new Date(now + 1000 * 60 * 5000);
         claims.put("exp", accessTokenExpire);
         String accessToken = createAccessToken(claims, accessTokenExpire);
 
         // RefreshToken 생성 (1시간)
-        Date refreshTokenExpire = new Date(now + 1000 * 60 * 60);
+        Date refreshTokenExpire = new Date(now + 1000 * 60 * 6000);
         claims.put("exp", refreshTokenExpire);
         String refreshToken = createRefreshToken(claims, refreshTokenExpire);
 

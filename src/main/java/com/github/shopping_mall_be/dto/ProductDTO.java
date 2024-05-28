@@ -19,6 +19,7 @@ public class ProductDTO {
 
     // 상품 등록을 위한 DTO
     //userId는 토큰 입력하면 자동으로 받아와줌
+    private Long productId;
     private String productName;
     private int price;
     private int stock;
@@ -39,6 +40,7 @@ public class ProductDTO {
 
     // Product 엔티티에서 DTO로 변환하는 생성자
     public ProductDTO(Product product) {
+        this.productId = product.getProductId();
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.stock = product.getStock();

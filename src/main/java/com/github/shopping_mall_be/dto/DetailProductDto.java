@@ -29,10 +29,11 @@ public class DetailProductDto {
     private Date startDate;
     private Date endDate;
     private Integer productStatus;
+    private String thumbNail;
     private List<String> imagePaths = new ArrayList<>();
 
 
-    public DetailProductDto(Long productId, String productName, String description, Integer price, Integer stock, String userNickName, String productOption, Integer productStatus, Date startDate, Date endDate) {
+    public DetailProductDto(Long productId, String productName, String description, Integer price, Integer stock, String userNickName, String productOption, Integer productStatus,String thumbNail, Date startDate, Date endDate) {
         this.productId = productId;
         this.productName = productName;
         this.description = description;
@@ -41,6 +42,7 @@ public class DetailProductDto {
         this.userNickName = userNickName;
         this.productOption = productOption;
         this.productStatus = productStatus;
+        this.thumbNail = thumbNail;
         this.startDate = startDate;
         this.endDate = endDate;
     }
