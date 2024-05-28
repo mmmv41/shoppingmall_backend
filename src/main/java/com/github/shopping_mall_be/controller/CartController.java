@@ -63,6 +63,7 @@ public class CartController {
                     dto.setUserNickname(item.getUser().getUser_nickname());
                     dto.setPrice(item.getProduct().getPrice());
                     dto.setProductName(item.getProduct().getProductName());
+
                     return dto;
                 }).collect(Collectors.toList());
         return ResponseEntity.ok(cartItemDtos);

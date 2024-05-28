@@ -5,6 +5,8 @@ import com.github.shopping_mall_be.domain.OrderedItem;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 public class OrderItemDto {
@@ -15,6 +17,10 @@ public class OrderItemDto {
     private Integer stock;
     private Integer totalPrice;
     private String productName;
+    private String imageUrl;
+    private Date createAt;
+    private Date updateAt;
+
 
     public OrderItemDto(OrderedItem orderedItem, Integer stock) {
         this.orderedItemId = orderedItem.getOrderedItemId();
@@ -24,6 +30,10 @@ public class OrderItemDto {
         this.stock = stock; // 매개변수로 받은 최신 재고 정보를 사용
         this.totalPrice = orderedItem.getTotalPrice();
         this.productName = orderedItem.getProduct().getProductName();
+        this.imageUrl = orderedItem.getImageUrl();
+        this.createAt = orderedItem.getCreatedAt();
+        this.updateAt = orderedItem.getUpdatedAt();
+
     }
 
 //    public OrderItemDto(OrderedItem orderedItem) {
