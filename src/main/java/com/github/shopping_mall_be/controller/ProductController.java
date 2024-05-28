@@ -43,7 +43,6 @@ public class ProductController {
     private UserRepository userRepository;
 
     @GetMapping("/product")
-    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 목록 조회", description = "페이지와 정렬 방식에 따른 상품 목록을 조회합니다.")
     public List<ProductResponseDto> getProducts(
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
@@ -53,7 +52,6 @@ public class ProductController {
     }
 
     @GetMapping("/product/{productId}")
-    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 상세 조회", description = "상품 ID에 해당하는 상품의 상세 정보를 조회합니다.")
     public DetailProductDto getProductById(@Parameter(description = "상품 ID") @PathVariable Long productId) {
         return productService.getProductById(productId);

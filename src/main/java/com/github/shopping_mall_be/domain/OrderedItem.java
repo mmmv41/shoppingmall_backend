@@ -47,6 +47,9 @@ public class OrderedItem {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
 
     @PrePersist
     protected void onCreate() {
