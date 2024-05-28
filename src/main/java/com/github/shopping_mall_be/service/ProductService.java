@@ -94,7 +94,9 @@ public class ProductService {
                         product.getStartDate(),
                         product.getEndDate(),
                         product.getProductStatus(),
+                        product.getImageUrl(),
                         product.getImagePaths()
+
                 ))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
