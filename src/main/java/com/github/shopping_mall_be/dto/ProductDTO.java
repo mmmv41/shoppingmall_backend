@@ -2,6 +2,8 @@ package com.github.shopping_mall_be.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.shopping_mall_be.domain.Product;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,10 +22,21 @@ public class ProductDTO {
     // 상품 등록을 위한 DTO
     //userId는 토큰 입력하면 자동으로 받아와줌
     private Long productId;
+
+
+    @NotEmpty(message = "상품 이름은 필수입니다.")
     private String productName;
+
+    @NotNull(message = "가격은 필수입니다.")
     private int price;
+
+    @NotNull(message = "가격은 필수입니다.")
     private int stock;
+
+    @NotNull(message = "가격은 필수입니다.")
     private String productOption;
+
+    @NotNull(message = "가격은 필수입니다.")
     private String userNickName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
