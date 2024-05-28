@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,18 +65,45 @@ public class ProductController {
         return productService.getProductsByUserId(userId);
     }
 
+
     @PostMapping("/products/register")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
-    public ProductDTO registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files, Principal principal) throws IOException {
+    public ResponseEntity<?> registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files, Principal principal) throws IOException {
+        if(files.isEmpty()) {
+            return ResponseEntity.badRequest().body("파일이 없습니다.");
+        }
+
         String userEmail = principal.getName();
 
-        productDTO.setFiles(files);
-
-        ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
-
-        return registeredProduct;
+        try {
+            productDTO.setFiles(files);
+            ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
+            return ResponseEntity.ok(registeredProduct);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("상품 등록 중 오류가 발생했습니다.");
+        }
     }
+
+    // 전역 예외 처리기
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류로 인해 요청을 완료할 수 없습니다: " + e.getMessage());
+    }
+
+
+//    @PostMapping("/products/register")
+//    @SecurityRequirement(name = "BearerAuth")
+//    @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
+//    public ProductDTO registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files, Principal principal) throws IOException {
+//        String userEmail = principal.getName();
+//
+//        productDTO.setFiles(files);
+//
+//        ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
+//
+//        return registeredProduct;
+//    }
 
 
 
