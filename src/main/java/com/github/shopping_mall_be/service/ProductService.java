@@ -6,6 +6,7 @@ import com.github.shopping_mall_be.domain.UserEntity;
 import com.github.shopping_mall_be.dto.DetailProductDto;
 import com.github.shopping_mall_be.dto.ProductDTO;
 import com.github.shopping_mall_be.dto.ProductResponseDto;
+import com.github.shopping_mall_be.repository.CartItemRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
 import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
@@ -44,6 +45,8 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CartItemRepository cartItemRepository;
     @Autowired
     private UserJpaRepository userJpaRepository;
 

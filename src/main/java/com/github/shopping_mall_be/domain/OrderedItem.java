@@ -18,7 +18,7 @@ public class OrderedItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderedItemId;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "user_id",  nullable = false)
     private UserEntity user;
 
@@ -46,6 +46,9 @@ public class OrderedItem {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
 
     @PrePersist

@@ -1,8 +1,6 @@
 package com.github.shopping_mall_be.dto.User;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /*
     로그인 및 회원가입에 사용되는 데이터
@@ -11,8 +9,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor //모든 필드 값을 파라미터로 받는 생성자를 생성
 @Builder
+@Getter
+@Setter
 public class UserDto {
 
+    private Long user_Id;// 추가
     private String email;
     private String user_password;
     private String user_nickname;
@@ -25,5 +26,6 @@ public class UserDto {
 
     @Builder.Default
     private final Deleted deleted = Deleted.INUSE;
+
 
 }

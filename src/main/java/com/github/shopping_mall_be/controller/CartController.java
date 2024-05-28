@@ -33,7 +33,7 @@ public class CartController {
     @Operation(summary = "장바구니에 상품 추가", description = "사용자의 장바구니에 상품을 추가합니다.")
     public ResponseEntity<?> addItemToCart(
             @Parameter(description = "장바구니에 추가할 상품 정보", required = true) @RequestBody CartItemDto cartItemDto,
-            @AuthenticationPrincipal Principal principal) {
+             Principal principal) {
         String userEmail = principal.getName(); // Get the email of the logged-in user
         cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
         return ResponseEntity.ok("장바구니에 상품이 정상적으로 담겼습니다.");
@@ -63,6 +63,7 @@ public class CartController {
                     dto.setUserNickname(item.getUser().getUser_nickname());
                     dto.setPrice(item.getProduct().getPrice());
                     dto.setProductName(item.getProduct().getProductName());
+
                     return dto;
                 }).collect(Collectors.toList());
         return ResponseEntity.ok(cartItemDtos);

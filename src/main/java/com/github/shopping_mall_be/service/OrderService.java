@@ -68,6 +68,7 @@ public class OrderService {
             orderedItem.setDescription(product.getDescription());
             orderedItem.setPrice(product.getPrice());
             orderedItem.setStock(newStock); // 주문 후 예상 재고를 설정
+            orderedItem.setImageUrl(product.getImageUrl());
 
             int totalPrice = product.getPrice() * cartItem.getQuantity();
             orderedItem.setTotalPrice(totalPrice);
@@ -103,6 +104,10 @@ public class OrderService {
         orderedItem.setDescription(product.getDescription());
         orderedItem.setPrice(product.getPrice());
         orderedItem.setStock(newStock);
+        orderedItem.setImageUrl(product.getImageUrl());
+
+
+
 
         int totalPrice = product.getPrice() * cartItem.getQuantity();
         orderedItem.setTotalPrice(totalPrice);

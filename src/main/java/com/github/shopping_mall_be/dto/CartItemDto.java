@@ -19,4 +19,6 @@ public class CartItemDto {
     private String productOption;
     private Integer productStatus;
     private Integer Stock;
+    private String imageUrl;
+
 }

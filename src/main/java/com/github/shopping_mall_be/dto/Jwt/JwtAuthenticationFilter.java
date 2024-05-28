@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -30,19 +31,24 @@ OncePerRequestFilter -->
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String[] whitelist = {"/api/signup", "/api/logout","/api/login", "/swagger-ui/**", "/swagger-ui/index.html","/error","/v3/**"};
+    private static final String[] whitelist = {"/api/signup", "/api/logout","/api/login", "/swagger-ui/**", "/swagger-ui/index.html","/error","/v3/**","/api/product/**","api/product"};
     private final JwtProvider jwtProvider;
     private final JwtService jwtService;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if(checkPathFree(request.getRequestURI())){
+        if(checkPathFree(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
         }
+//        if(checkPathFree(request.getRequestURI())){
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         String refreshToken = jwtProvider.extractRefreshToken(request)
                 .filter(jwtProvider::validateToken)
@@ -61,7 +67,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public boolean checkPathFree(String requestURI){
-        return PatternMatchUtils.simpleMatch(whitelist, requestURI);
+//        return PatternMatchUtils.simpleMatch(whitelist, requestURI);
+        for (String pattern : whitelist) {
+            if (pathMatcher.match(pattern, requestURI)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
