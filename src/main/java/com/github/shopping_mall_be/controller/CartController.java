@@ -64,6 +64,7 @@ public class CartController {
                     dto.setPrice(item.getProduct().getPrice());
                     dto.setProductName(item.getProduct().getProductName());
 
+
                     return dto;
                 }).collect(Collectors.toList());
         return ResponseEntity.ok(cartItemDtos);

@@ -135,6 +135,7 @@ public class CartService {
             dto.setProductStatus(cartItem.getProduct().getProductStatus());
             dto.setStock(cartItem.getProduct().getStock());
             dto.setImageUrl(cartItem.getProduct().getImageUrl());
+            dto.setTotalprice(cartItem.getProduct().getPrice()*cartItem.getQuantity());
             return dto;
         }).collect(Collectors.toList());
     }
