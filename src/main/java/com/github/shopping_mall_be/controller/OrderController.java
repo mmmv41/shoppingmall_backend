@@ -2,6 +2,7 @@ package com.github.shopping_mall_be.controller;
 
 import com.github.shopping_mall_be.domain.OrderedItem;
 import com.github.shopping_mall_be.dto.OrderItemDto;
+import com.github.shopping_mall_be.dto.OrderResponseDto;
 import com.github.shopping_mall_be.repository.OrderedItemRepository;
 import com.github.shopping_mall_be.service.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -50,12 +51,14 @@ public class OrderController {
     @PostMapping("/order/{cartItemId}")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "카트 아이템으로 주문 생성", description = "카트 아이템 ID를 이용하여 주문을 생성합니다.")
-    public ResponseEntity<String> createOrder(@Parameter(description = "카트 아이템 ID", required = true) @PathVariable Long cartItemId) {
+    public ResponseEntity<OrderResponseDto> createOrder(@Parameter(description = "카트 아이템 ID", required = true) @PathVariable Long cartItemId) {
         try {
-            orderService.createOrderFromCartItemId(cartItemId);
-            return ResponseEntity.ok("주문이 성공적으로 완료되었습니다.");
+            OrderResponseDto orderResponse = orderService.createOrderFromCartItemId(cartItemId);
+            return ResponseEntity.ok(orderResponse);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            OrderResponseDto errorResponse = new OrderResponseDto();
+            errorResponse.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

@@ -5,6 +5,7 @@ import com.github.shopping_mall_be.domain.OrderedItem;
 import com.github.shopping_mall_be.domain.Product;
 import com.github.shopping_mall_be.domain.UserEntity;
 import com.github.shopping_mall_be.dto.OrderItemDto;
+import com.github.shopping_mall_be.dto.OrderResponseDto;
 import com.github.shopping_mall_be.repository.CartItemRepository;
 import com.github.shopping_mall_be.repository.OrderedItemRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
@@ -81,7 +82,7 @@ public class OrderService {
         }
     }
 
-    public void createOrderFromCartItemId(Long cartItemId) {
+    public OrderResponseDto createOrderFromCartItemId(Long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("CartItem not found"));
 
@@ -114,6 +115,15 @@ public class OrderService {
 
         product.setStock(newStock);
         productRepository.save(product);
+
+        OrderResponseDto response = new OrderResponseDto();
+        response.setMessage("주문이 성공적으로 완료되었습니다.");
+        response.setCartItemId(cartItemId);
+        response.setProductId(product.getProductId());
+        response.setQuantity(cartItem.getQuantity());
+        response.setTotalPrice(totalPrice);
+
+        return response;
     }
 
     public void deleteItemFromOrderById(Long orderedItemId, String email, String password) {
