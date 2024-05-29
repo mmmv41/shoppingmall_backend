@@ -1,4 +1,3 @@
-
 package com.github.shopping_mall_be.controller;
 
 import com.github.shopping_mall_be.domain.Product;
@@ -77,7 +76,7 @@ public class ProductController {
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
             @RequestParam("description") String description,
-            @RequestParam("base64Files") List<String> base64Files,
+            @RequestParam("files") List<MultipartFile> files,
             Principal principal) {
         try {
             String userEmail = principal.getName();
@@ -90,7 +89,7 @@ public class ProductController {
             productDTO.setStartDate(startDate);
             productDTO.setEndDate(endDate);
             productDTO.setDescription(description);
-            productDTO.setBase64Files(base64Files);
+            productDTO.setFiles(files);
 
             ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
 
@@ -135,7 +134,7 @@ public class ProductController {
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
             @RequestParam("description") String description,
-            @RequestParam("base64Files") List<String> base64Files) {
+            @RequestParam("files") List<MultipartFile> files) {
         try {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setProductName(productName);
@@ -145,7 +144,7 @@ public class ProductController {
             productDTO.setStartDate(startDate);
             productDTO.setEndDate(endDate);
             productDTO.setDescription(description);
-            productDTO.setBase64Files(base64Files);
+            productDTO.setFiles(files);
 
             ProductDTO updatedProduct = productService.updateProduct(productId, email, productDTO, password);
             return ResponseEntity.ok(updatedProduct);

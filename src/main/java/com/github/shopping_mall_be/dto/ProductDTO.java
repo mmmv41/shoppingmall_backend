@@ -48,10 +48,8 @@ public class ProductDTO {
     private Date endDate;
 
     private String description;
-//    private List<MultipartFile> files = new ArrayList<>();
+    private List<MultipartFile> files = new ArrayList<>();
     private List<String> imagePaths = new ArrayList<>(); // 이미지 경로 추가
-
-    private List<String> base64Files;
 
     // Product 엔티티에서 DTO로 변환하는 생성자
     public ProductDTO(Product product) {

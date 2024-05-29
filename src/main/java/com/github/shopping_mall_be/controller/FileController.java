@@ -1,3 +1,5 @@
+
+
 package com.github.shopping_mall_be.controller;
 
 import com.github.shopping_mall_be.repository.ProductRepository;
@@ -42,7 +44,7 @@ public class FileController {
         }
     }
 
-
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
@@ -62,4 +64,3 @@ public class FileController {
         }
     }
 }
-
