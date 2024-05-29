@@ -33,6 +33,7 @@ public class DetailProductDto {
     private List<String> imagePaths = new ArrayList<>();
 
 
+
     public DetailProductDto(Long productId, String productName, String description, Integer price, Integer stock, String userNickName, String productOption, Integer productStatus,String thumbNail, Date startDate, Date endDate) {
         this.productId = productId;
         this.productName = productName;

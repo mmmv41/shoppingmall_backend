@@ -13,6 +13,7 @@ import com.github.shopping_mall_be.repository.User.UserRepository;
 import com.github.shopping_mall_be.util.FileStorageUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +25,18 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
+
+
+    @Value("${UPLOAD_DIR}")
+    private String uploadDir;
 
     @Autowired
     private FileStorageUtil fileStorageUtil;
@@ -53,7 +58,7 @@ public class ProductService {
     public List<ProductResponseDto> getAvailableProducts(int page, int size, String sort) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productsPage = productRepository.findAllByStockGreaterThanAndProductStatus(0, 1, pageable);
-// productStatus가 1인 물건만 조회가능
+            // productStatus가 1인 물건만 조회가능
         List<ProductResponseDto> productDtos = productsPage.stream().map(product -> {
             ProductResponseDto dto = new ProductResponseDto();
             dto.setProductId(product.getProductId());
@@ -67,6 +72,17 @@ public class ProductService {
             dto.setImageUrl(product.getImageUrl());
             dto.setProductStatus(product.getProductStatus());
             dto.setUserNickName(product.getUser().getUser_nickname());
+
+            try {
+                Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
+                byte[] imageBytes = Files.readAllBytes(filePath);
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                dto.setImageBase64(base64Image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
             return dto;
         }).collect(Collectors.toList());
 
@@ -106,19 +122,31 @@ public class ProductService {
                 .filter(product -> product.getStock() > 0)
                 .filter(product -> product.getProductStatus() == 1) // productStatus가 1인 제품만 필터링
                 .sorted(Comparator.comparing(Product::getEndDate)) // endDate로 정렬
-                .map(product -> new ProductResponseDto(
-                        product.getProductId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getImageUrl(),
-                        product.getUser().getUser_nickname(),
-                        product.getProductOption(),
-                        product.getProductStatus(),
-                        product.getStartDate(),
-                        product.getEndDate()
-                )).collect(Collectors.toList());
+                .map(product -> {
+                    ProductResponseDto dto = new ProductResponseDto();
+                    dto.setProductId(product.getProductId());
+                    dto.setProductName(product.getProductName());
+                    dto.setDescription(product.getDescription());
+                    dto.setPrice(product.getPrice());
+                    dto.setStock(product.getStock());
+                    dto.setImageUrl(product.getImageUrl());
+                    dto.setUserNickName(product.getUser().getUser_nickname());
+                    dto.setProductOption(product.getProductOption());
+                    dto.setProductStatus(product.getProductStatus());
+                    dto.setStartDate(product.getStartDate());
+                    dto.setEndDate(product.getEndDate());
+
+                    try {
+                        Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
+                        byte[] imageBytes = Files.readAllBytes(filePath);
+                        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                        dto.setImageBase64(base64Image);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    return dto;
+                }).collect(Collectors.toList());
     }
 
 

@@ -27,6 +27,7 @@ public class ProductResponseDto {
     private Integer productStatus;
     private Date startDate;
     private Date endDate;
+    private String imageBase64;
 
 
 }

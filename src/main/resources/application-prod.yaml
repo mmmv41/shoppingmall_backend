@@ -15,6 +15,10 @@ spring:
         html: text/html
         css: text/css
         js: application/javascript
+  servlet:
+    multipart:
+      max-file-size: -1 # 파일 크기 제한 없음
+      max-request-size: -1 # 요청 크기 제한 없음
 server:
   port: 8080
   jpa:
