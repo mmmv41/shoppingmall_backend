@@ -20,5 +20,6 @@ public class CartItemDto {
     private Integer productStatus;
     private Integer Stock;
     private String imageUrl;
+    private Integer totalprice;
 
 }

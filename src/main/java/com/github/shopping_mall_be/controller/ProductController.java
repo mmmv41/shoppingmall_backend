@@ -69,26 +69,39 @@ public class ProductController {
     @PostMapping("/products/register")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
-    public ResponseEntity<?> registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files, Principal principal) throws IOException {
-        if(files.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 없습니다.");
-        }
-
-        String userEmail = principal.getName();
-
+    public ResponseEntity<?> registerProduct(
+            @RequestParam("productName") String productName,
+            @RequestParam("price") int price,
+            @RequestParam("stock") int stock,
+            @RequestParam("productOption") String productOption,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam("description") String description,
+            @RequestParam("files") List<MultipartFile> files,
+            Principal principal) {
         try {
-            productDTO.setFiles(files);
-            ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
-            return ResponseEntity.ok(registeredProduct);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("상품 등록 중 오류가 발생했습니다.");
-        }
-    }
+            String userEmail = principal.getName();
 
-    // 전역 예외 처리기
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류로 인해 요청을 완료할 수 없습니다: " + e.getMessage());
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setProductName(productName);
+            productDTO.setPrice(price);
+            productDTO.setStock(stock);
+            productDTO.setProductOption(productOption);
+            productDTO.setStartDate(startDate);
+            productDTO.setEndDate(endDate);
+            productDTO.setDescription(description);
+            productDTO.setFiles(files);
+
+            ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
+
+            return ResponseEntity.ok(registeredProduct);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("파일 저장 중 오류가 발생했습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("상품 등록 중 오류가 발생했습니다.");
+        }
     }
 
 
@@ -104,6 +117,7 @@ public class ProductController {
 //
 //        return registeredProduct;
 //    }
+
 
 
 

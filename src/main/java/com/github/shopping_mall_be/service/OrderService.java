@@ -107,8 +107,6 @@ public class OrderService {
         orderedItem.setImageUrl(product.getImageUrl());
 
 
-
-
         int totalPrice = product.getPrice() * cartItem.getQuantity();
         orderedItem.setTotalPrice(totalPrice);
 
