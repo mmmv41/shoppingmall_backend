@@ -77,7 +77,7 @@ public class ProductController {
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
             @RequestParam("description") String description,
-            @RequestParam("files") List<MultipartFile> files,
+            @RequestParam("base64Files") List<String> base64Files,
             Principal principal) {
         try {
             String userEmail = principal.getName();
@@ -90,7 +90,7 @@ public class ProductController {
             productDTO.setStartDate(startDate);
             productDTO.setEndDate(endDate);
             productDTO.setDescription(description);
-            productDTO.setFiles(files);
+            productDTO.setBase64Files(base64Files);
 
             ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
 
@@ -135,7 +135,7 @@ public class ProductController {
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
             @RequestParam("description") String description,
-            @RequestParam("files") List<MultipartFile> files) {
+            @RequestParam("base64Files") List<String> base64Files) {
         try {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setProductName(productName);
@@ -145,7 +145,7 @@ public class ProductController {
             productDTO.setStartDate(startDate);
             productDTO.setEndDate(endDate);
             productDTO.setDescription(description);
-            productDTO.setFiles(files);
+            productDTO.setBase64Files(base64Files);
 
             ProductDTO updatedProduct = productService.updateProduct(productId, email, productDTO, password);
             return ResponseEntity.ok(updatedProduct);

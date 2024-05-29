@@ -24,10 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,52 +120,51 @@ public class ProductService {
 
 
 
-    public ProductDTO registerProduct(String email,ProductDTO productDTO) throws IOException {
-            validateProductInfo(productDTO);
-            UserEntity user = userRepository.findByEmail2(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+    public ProductDTO registerProduct(String email, ProductDTO productDTO) throws IOException {
+        validateProductInfo(productDTO);
+        UserEntity user = userRepository.findByEmail2(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-            List<MultipartFile> files = productDTO.getFiles() != null ? productDTO.getFiles() : new ArrayList<>();
+        List<String> base64Files = productDTO.getBase64Files() != null ? productDTO.getBase64Files() : new ArrayList<>();
 
-            List<String> imagePaths = files.stream()
-                    .map(file -> {
-                        try {
-                            return fileStorageUtil.storeFile(file);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Failed to store file: " + file.getOriginalFilename(), e);
-                        }
-                    })
-                    .collect(Collectors.toList());
+        List<String> imagePaths = base64Files.stream()
+                .map(base64File -> {
+                    try {
+                        byte[] decodedBytes = Base64.getDecoder().decode(base64File);
+                        return fileStorageUtil.storeFile(decodedBytes);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to store file", e);
+                    }
+                })
+                .collect(Collectors.toList());
 
+        // 상품 정보 설정
+        Product product = new Product();
+        product.setProductName(productDTO.getProductName());
+        product.setPrice(productDTO.getPrice());
+        product.setDescription(productDTO.getDescription());
+        product.setStock(productDTO.getStock());
+        product.setStartDate(productDTO.getStartDate());
+        product.setEndDate(productDTO.getEndDate());
+        product.setDescription(productDTO.getDescription());
+        product.setProductOption(productDTO.getProductOption());
+        product.setUser(user);
+        productDTO.setUserNickName(productDTO.getUserNickName());
 
-            // 상품 정보 설정
-            Product product = new Product();
-            product.setProductName(productDTO.getProductName());
-            product.setPrice(productDTO.getPrice());
-            product.setDescription(productDTO.getDescription());
-            product.setStock(productDTO.getStock());
-            product.setStartDate(productDTO.getStartDate());
-            product.setEndDate(productDTO.getEndDate());
-            product.setDescription(productDTO.getDescription());
-            product.setProductOption(productDTO.getProductOption());
-            product.setUser(user);
-            productDTO.setUserNickName(productDTO.getUserNickName());
+        Date now = new Date();
+        product.setProductStatus(product.getEndDate().compareTo(now) >= 0 ? 1 : 0);
 
-            Date now = new Date();
-            product.setProductStatus(product.getEndDate().compareTo(now) >= 0 ? 1 : 0);
-
-
-            // 첫 번째 이미지 경로를 imageUrl에 설정
-            if (!imagePaths.isEmpty()) {
-                product.setImageUrl(imagePaths.get(0)); // 첫 번째 이미지 경로를 imageUrl에 설정
-            }
-
-            imagePaths.forEach(product::addImage);  // 각 이미지 경로를 Product에 추가
-            // 상품 등록
-            Product registeredProduct = productRepository.save(product);
-            // 등록된 상품 정보를 DTO로 변환하여 반환
-            return new ProductDTO(registeredProduct);
+        // 첫 번째 이미지 경로를 imageUrl에 설정
+        if (!imagePaths.isEmpty()) {
+            product.setImageUrl(imagePaths.get(0)); // 첫 번째 이미지 경로를 imageUrl에 설정
         }
+
+        imagePaths.forEach(product::addImage);  // 각 이미지 경로를 Product에 추가
+        // 상품 등록
+        Product registeredProduct = productRepository.save(product);
+        // 등록된 상품 정보를 DTO로 변환하여 반환
+        return new ProductDTO(registeredProduct);
+    }
     private void validateProductInfo(ProductDTO productDTO) {
         // 필요한 모든 상품 정보가 입력되었는지 확인하는 로직 추가
         // 예: productName, price, startDate, endDate, description 등
@@ -242,13 +238,15 @@ public class ProductService {
         product.setProductStatus(product.getEndDate().compareTo(now) >= 0 ? 1 : 0);
 
         // 이미지 처리
-        List<MultipartFile> files = productDTO.getFiles() != null ? productDTO.getFiles() : new ArrayList<>();
-        List<String> imagePaths = files.stream()
-                .map(file -> {
+        List<String> base64Files = productDTO.getBase64Files() != null ? productDTO.getBase64Files() : new ArrayList<>();
+
+        List<String> imagePaths = base64Files.stream()
+                .map(base64File -> {
                     try {
-                        return fileStorageUtil.storeFile(file);
+                        byte[] decodedBytes = Base64.getDecoder().decode(base64File);
+                        return fileStorageUtil.storeFile(decodedBytes);
                     } catch (IOException e) {
-                        throw new RuntimeException("Failed to store file: " + file.getOriginalFilename(), e);
+                        throw new RuntimeException("Failed to store file", e);
                     }
                 })
                 .collect(Collectors.toList());

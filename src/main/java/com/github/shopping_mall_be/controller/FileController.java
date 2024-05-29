@@ -42,7 +42,7 @@ public class FileController {
         }
     }
 
-    @SecurityRequirement(name = "BearerAuth")
+
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
