@@ -9,6 +9,7 @@ import com.github.shopping_mall_be.repository.CartItemRepository;
 //import com.github.shopping_mall_be.repository.CartRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
+import com.github.shopping_mall_be.util.CartItemExistsException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +37,8 @@ public class CartService {
     @Autowired
     private ProductRepository productRepository;
 
-    // 장바구니에 아이템 추가
+
+//     장바구니에 아이템 추가
     public Long addItemToCart(String email, Long productId, Integer quantity) {
         UserEntity user = userRepository.findByEmail2(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -47,7 +49,7 @@ public class CartService {
             Optional<CartItem> existingCartItem = cartItemRepository.findByUserAndProduct(user, product);
 
             if (existingCartItem.isPresent()) {
-                throw new RuntimeException("해당 물건이 이미 장바구니 내부에 있습니다.");
+                throw new CartItemExistsException("해당 물건이 이미 장바구니 내부에 있습니다.");
             } else {
                 CartItem cartItem = new CartItem();
                 cartItem.setUser(user);

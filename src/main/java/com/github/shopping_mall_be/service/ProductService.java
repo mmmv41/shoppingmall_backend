@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProductService {
@@ -139,36 +140,62 @@ public class ProductService {
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)); // 상품을 찾을 수 없는 경우 예외 발생
     }
-    public List<ProductResponseDto> getProductsByUserId(Long userId){
-        return productRepository.findByUserUserId(userId).stream()
-                .filter(product -> product.getStock() > 0)
-                .filter(product -> product.getProductStatus() == 1) // productStatus가 1인 제품만 필터링
-                .sorted(Comparator.comparing(Product::getEndDate)) // endDate로 정렬
-                .map(product -> {
-                    ProductResponseDto dto = new ProductResponseDto();
-                    dto.setProductId(product.getProductId());
-                    dto.setProductName(product.getProductName());
-                    dto.setDescription(product.getDescription());
-                    dto.setPrice(product.getPrice());
-                    dto.setStock(product.getStock());
-                    dto.setImageUrl(product.getImageUrl());
-                    dto.setUserNickName(product.getUser().getUser_nickname());
-                    dto.setProductOption(product.getProductOption());
-                    dto.setProductStatus(product.getProductStatus());
-                    dto.setStartDate(product.getStartDate());
-                    dto.setEndDate(product.getEndDate());
 
-                    try {
-                        Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
-                        byte[] imageBytes = Files.readAllBytes(filePath);
-                        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-                        dto.setImageBase64(base64Image);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+    public List<ProductResponseDto> getProductsByUserId(Long userId, int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Product> productsPage = productRepository.findByUserUserIdAndStockGreaterThanAndProductStatus(userId, 0, 1, pageable);
+        Stream<ProductResponseDto> productDtoStream = productsPage.stream().map(product -> {
+            ProductResponseDto dto = new ProductResponseDto();
+            dto.setProductId(product.getProductId());
+            dto.setProductName(product.getProductName());
+            dto.setDescription(product.getDescription());
+            dto.setPrice(product.getPrice());
+            dto.setStock(product.getStock());
+            dto.setImageUrl(product.getImageUrl());
+            dto.setUserNickName(product.getUser().getUser_nickname());
+            dto.setProductOption(product.getProductOption());
+            dto.setProductStatus(product.getProductStatus());
+            dto.setStartDate(product.getStartDate());
+            dto.setEndDate(product.getEndDate());
 
-                    return dto;
-                }).collect(Collectors.toList());
+            try {
+                Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
+                byte[] imageBytes = Files.readAllBytes(filePath);
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                dto.setImageBase64(base64Image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return dto;
+        });
+
+        List<ProductResponseDto> sortedProductDtos;
+        if ("asc".equalsIgnoreCase(sort)) {
+            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getPrice)).collect(Collectors.toList());
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getPrice).reversed()).collect(Collectors.toList());
+        } else if ("enddate".equalsIgnoreCase(sort)) {
+            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getEndDate)).collect(Collectors.toList());
+        } else {
+            // 기본적으로는 endDate로 오름차순 정렬
+            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getEndDate)).collect(Collectors.toList());
+        }
+
+        return sortedProductDtos;
+    }
+
+    // 정렬 방식을 처리하는 메서드
+    private Sort sortOrder(String sort) {
+        switch (sort.toLowerCase()) {
+            case "asc":
+                return Sort.by("price").ascending();
+            case "desc":
+                return Sort.by("price").descending();
+            case "enddate":
+            default:
+                return Sort.by("endDate").ascending();
+        }
     }
 
 
