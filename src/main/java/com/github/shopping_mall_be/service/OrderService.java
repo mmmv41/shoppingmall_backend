@@ -12,14 +12,23 @@ import com.github.shopping_mall_be.repository.ProductRepository;
 import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
+
+    @Value("${UPLOAD_DIR}")
+    private String uploadDir;
 
     @Autowired
     private OrderedItemRepository orderedItemRepository;
@@ -162,13 +171,23 @@ public class OrderService {
         return orderedItems.stream()
                 .map(orderedItem -> {
                     Product product = orderedItem.getProduct();
-                    // ProductRepository에서 상품의 최신 재고 정보를 가져옵니다.
                     Product latestProductInfo = productRepository.findById(product.getProductId())
                             .orElseThrow(() -> new RuntimeException("Product not found"));
-                    // OrderItemDto 생성자에 상품의 최신 재고 정보를 포함하여 객체를 생성합니다.
-                    return new OrderItemDto(orderedItem, latestProductInfo.getStock());
+                    OrderItemDto dto = new OrderItemDto(orderedItem, latestProductInfo.getStock());
+
+                    try {
+                        Path filePath = Paths.get(uploadDir).resolve(orderedItem.getProduct().getImageUrl()).normalize();
+                        byte[] imageBytes = Files.readAllBytes(filePath);
+                        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                        dto.setBase64Image(base64Image);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        // 파일을 읽는 데 실패할 경우, 로그를 남기고 적절한 기본값을 설정
+                        // 예: dto.setBase64Image("기본 이미지의 Base64 인코딩 값");
+                    }
+
+                    return dto;
                 })
                 .collect(Collectors.toList());
     }
-
 }

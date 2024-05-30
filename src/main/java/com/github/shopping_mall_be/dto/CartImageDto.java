@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CartItemDto {
+public class CartImageDto {
     private Long productId;
     private String productName;
     private Integer quantity;
@@ -21,6 +21,5 @@ public class CartItemDto {
     private Integer Stock;
     private String imageUrl;
     private Integer totalprice;
-
-
+    private String base64Image;
 }

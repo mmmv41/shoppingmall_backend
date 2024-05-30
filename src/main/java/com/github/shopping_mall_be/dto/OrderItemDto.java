@@ -20,6 +20,7 @@ public class OrderItemDto {
     private String imageUrl;
     private Date createAt;
     private Date updateAt;
+    private String base64Image;
 
 
     public OrderItemDto(OrderedItem orderedItem, Integer stock) {
@@ -34,15 +35,6 @@ public class OrderItemDto {
         this.createAt = orderedItem.getCreatedAt();
         this.updateAt = orderedItem.getUpdatedAt();
 
-    }
 
-//    public OrderItemDto(OrderedItem orderedItem) {
-//        this.orderedItemId = orderedItem.getOrderedItemId();
-//        this.quantity = orderedItem.getQuantity();
-//        this.description = orderedItem.getDescription();
-//        this.price = orderedItem.getPrice();
-//        this.stock = orderedItem.getStock();
-//        this.totalPrice = orderedItem.getTotalPrice();
-//        this.productName = orderedItem.getProduct().getProductName();
-//    }
+    }
 }

@@ -45,7 +45,7 @@ public class ProductController {
     @GetMapping("/product")
     @Operation(summary = "상품 목록 조회", description = "페이지와 정렬 방식에 따른 상품 목록을 조회합니다.")
     public List<ProductResponseDto> getProducts(
-            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 번호 (1부터 시작)") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 당 상품 수") @RequestParam(defaultValue = "8") int size,
             @Parameter(description = "정렬 방식 (asc: 오름차순, desc: 내림차순)") @RequestParam(defaultValue = "") String sort) {
         return productService.getAvailableProducts(page, size, sort);

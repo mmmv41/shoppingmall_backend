@@ -3,6 +3,7 @@
 package com.github.shopping_mall_be.controller;
 
 import com.github.shopping_mall_be.domain.CartItem;
+import com.github.shopping_mall_be.dto.CartImageDto;
 import com.github.shopping_mall_be.dto.CartItemDto;
 import com.github.shopping_mall_be.dto.CartTotalPriceDto;
 import com.github.shopping_mall_be.service.CartService;
@@ -97,7 +98,7 @@ public class CartController {
     @GetMapping("/cart/{userId}")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "특정 사용자의 장바구니 항목 조회", description = "userId에 따라 특정 사용자의 장바구니 항목을 조회합니다.")
-    public List<CartItemDto> getCartItems(
+    public List<CartImageDto> getCartItems(
             @Parameter(description = "사용자 ID", required = true) @PathVariable Long userId) {
         return cartService.getCartItemsByUserId(userId);
     }
