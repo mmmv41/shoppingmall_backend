@@ -12,9 +12,12 @@ import com.github.shopping_mall_be.repository.Jwt.TokenJpaRepository;
 import com.github.shopping_mall_be.repository.Jwt.TokenRepository;
 import com.github.shopping_mall_be.repository.User.UserJpaRepository;
 import com.github.shopping_mall_be.repository.User.UserRepository;
+import com.github.shopping_mall_be.util.FileStorageUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +47,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
     private final TokenJpaRepository tokenJpaRepository;
 
+    @Value("${UPLOAD_DIR}")
+    private String uploadDir;
+
+    @Autowired
+    private FileStorageUtil fileStorageUtil;
+
     @Override
     public String encodePassword(String password) { //패스워드 암호화
         return encoder.encode(password);
@@ -51,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto register(NewUserDto userDto) {
+    public UserDto register(NewUserDto userDto) throws IOException {
 
         //email 중복 검사
         if (userRepository.findByEmail(userDto.getEmail()) != null) {
@@ -60,13 +74,18 @@ public class UserServiceImpl implements UserService {
 
         String password = encodePassword(userDto.getUser_password());
 
+        String imagePath = null;
+        if (userDto.getUser_img() != null && !userDto.getUser_img().isEmpty()) {
+            imagePath = fileStorageUtil.storeFile(userDto.getUser_img());
+        }
+
         UserDto newUser = UserDto.builder()
                 .email(userDto.getEmail())
                 .user_password(password)
                 .user_nickname(userDto.getUser_nickname())
                 .user_phone(userDto.getUser_phone())
                 .user_addr(userDto.getUser_addr())
-                .user_img(userDto.getUser_img())
+                .user_img(imagePath)
                 .build();
 
         log.info("회원가입에 성공했습니다.");
@@ -217,12 +236,23 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             return null;
         }
+
+        String base64Image = ""; // base64 이미지를 저장할 변수 초기화
+        try {
+            Path filePath = Paths.get(uploadDir).resolve(userEntity.getUser_img()).normalize(); // 이미지 파일 경로
+            byte[] imageBytes = Files.readAllBytes(filePath); // 이미지 파일 읽기
+            base64Image = Base64.getEncoder().encodeToString(imageBytes); // base64로 인코딩
+        } catch (IOException e) {
+            e.printStackTrace(); // 예외 처리
+            // 로그 남기기나 적절한 예외 처리 로직 추가
+        }
+
         return getUserDto.builder()
                 .email(userEntity.getEmail())
                 .user_nickname(userEntity.getUser_nickname())
                 .user_phone(userEntity.getUser_phone())
                 .user_addr(userEntity.getUser_addr())
-                .user_img(userEntity.getUser_img())
+                .user_img(base64Image) // base64 인코딩된 이미지 설정
                 .role(userEntity.getUser_role())
                 .deleted(userEntity.getDeleted())
                 .build();

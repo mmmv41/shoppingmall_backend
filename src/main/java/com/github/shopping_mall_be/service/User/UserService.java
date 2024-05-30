@@ -7,12 +7,14 @@ import com.github.shopping_mall_be.dto.User.UserDto;
 import com.github.shopping_mall_be.dto.User.getUserDto;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
+
 public interface UserService {
 
     String encodePassword(String password);
     boolean matchesPassword(String rawPassword, String encodedPassword);
 
-    UserDto register(NewUserDto userDto);
+    UserDto register(NewUserDto userDto) throws IOException;
     void unregister(String email);
 
     Token login(String email, String pw) throws Exception;

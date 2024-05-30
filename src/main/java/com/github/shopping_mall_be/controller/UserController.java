@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequestMapping("/api")
@@ -36,34 +37,49 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "Created"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
+
     @PostMapping("/signup")
-    public ResponseEntity<?> join(@Validated @RequestBody NewUserDto userDto, BindingResult result) {
+    public ResponseEntity<?> join(
+            @RequestParam("email") String email,
+            @RequestParam("password") String userPassword,
+            @RequestParam("nickname") String userNickname,
+            @RequestParam("phone") String userPhone,
+            @RequestParam("addr") String userAddr,
+            @RequestParam("userImg") MultipartFile userImg) {
+
         try {
-            if (!isValidEmail(userDto.getEmail())) {
-                result.rejectValue("email", "email.invalid", "이메일 형식에 맞게 입력하세요.");
+            NewUserDto newUserDto = NewUserDto.builder()
+                    .email(email)
+                    .user_password(userPassword)
+                    .user_nickname(userNickname)
+                    .user_phone(userPhone)
+                    .user_addr(userAddr)
+                    .user_img(userImg)
+                    .build();
+
+            // 유효성 검사
+            if (!isValidEmail(newUserDto.getEmail())) {
                 log.info("이메일 형식에 맞게 입력하세요.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 형식에 맞게 입력하세요.");
             }
 
-            if (!isValidPassword(userDto.getUser_password())) {
-                result.rejectValue("password", "password.invalid", "비밀번호 형식에 맞게 입력해주세요.");
+            if (!isValidPassword(newUserDto.getUser_password())) {
                 log.info("비밀번호 형식에 맞게 입력해주세요.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호 형식에 맞게 입력해주세요.");
             }
 
-            if (!isValidPhone(userDto.getUser_phone())) {
-                result.rejectValue("user_phone", "user_phone.invalid", "핸드폰 입력 형식에 맞게 입력해주세요.");
+            if (!isValidPhone(newUserDto.getUser_phone())) {
                 log.info("핸드폰 입력 형식에 맞게 입력해주세요.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("핸드폰 입력 형식에 맞게 입력해주세요.");
             }
 
-            UserDto saveUser = userService.register(userDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.of(saveUser));
+            // 사용자 등록
+            UserDto savedUser = userService.register(newUserDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.of(savedUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
 
 
     @Operation(summary = "로그인", description = "로그인을 위한 엔드포인트입니다.")

@@ -15,6 +15,7 @@ public class getUserDto {
     private String user_addr;
     private String user_img;
 
+
     @Builder.Default
     private final Role role = Role.USER;
 
