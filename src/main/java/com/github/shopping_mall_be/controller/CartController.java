@@ -17,7 +17,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,10 +35,13 @@ public class CartController {
     @Operation(summary = "장바구니에 상품 추가", description = "사용자의 장바구니에 상품을 추가합니다.")
     public ResponseEntity<?> addItemToCart(
             @Parameter(description = "장바구니에 추가할 상품 정보", required = true) @RequestBody CartItemDto cartItemDto,
-             Principal principal) {
-        String userEmail = principal.getName(); // Get the email of the logged-in user
-        Long cartItemId= cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
-        return ResponseEntity.ok("장바구니에 상품이 정상적으로 담겼습니다. CartItem ID: " + cartItemId);
+            Principal principal) {
+        String userEmail = principal.getName();
+        Long cartItemId = cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "장바구니에 상품이 정상적으로 담겼습니다.");
+        response.put("cartItemId", cartItemId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/cart/total-price/{userId}")

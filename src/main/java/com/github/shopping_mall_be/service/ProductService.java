@@ -56,7 +56,7 @@ public class ProductService {
     private UserJpaRepository userJpaRepository;
 
     public List<ProductResponseDto> getAvailableProducts(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page -1, size);
         Page<Product> productsPage = productRepository.findAllByStockGreaterThanAndProductStatus(0, 1, pageable);
             // productStatus가 1인 물건만 조회가능
         List<ProductResponseDto> productDtos = productsPage.stream().map(product -> {
