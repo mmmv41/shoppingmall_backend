@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -32,6 +33,14 @@ public class NewUserDto {   //유효성 검사 추가
     @NotBlank(message = "주소를 입력해주세요.")
     private String user_addr;
 
-    private String user_img;
+    private MultipartFile user_img;
 
+    public NewUserDto(String email, String userPassword, String userNickname, String userPhone, String userAddr, MultipartFile userImg) {
+        this.email = email;
+        this.user_password = userPassword;
+        this.user_nickname = userNickname;
+        this.user_phone = userPhone;
+        this.user_addr = userAddr;
+        this.user_img = userImg;
+    }
 }

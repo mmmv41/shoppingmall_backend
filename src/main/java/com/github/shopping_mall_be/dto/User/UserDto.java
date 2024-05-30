@@ -1,6 +1,7 @@
 package com.github.shopping_mall_be.dto.User;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /*
     로그인 및 회원가입에 사용되는 데이터

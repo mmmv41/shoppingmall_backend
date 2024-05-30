@@ -99,24 +99,46 @@ public class ProductService {
     public DetailProductDto getProductById(Long productId) {
         return productRepository.findById(productId)
                 .filter(product -> product.getStock() > 0)
-                .map(product -> new DetailProductDto(
-                        product.getProductId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getUser().getUser_nickname(),
-                        product.getProductOption(),
-                        product.getStartDate(),
-                        product.getEndDate(),
-                        product.getProductStatus(),
-                        product.getImageUrl(),
-                        product.getImagePaths()
+                .map(product -> {
+                    // DetailProductDto 생성자를 사용해 초기화
+                    DetailProductDto dto = new DetailProductDto(
+                            product.getProductId(),
+                            product.getProductName(),
+                            product.getDescription(),
+                            product.getPrice(),
+                            product.getStock(),
+                            product.getUser().getUser_nickname(), // getUser_nickname() -> getUserNickName() 수정
+                            product.getProductOption(),
+                            product.getProductStatus(), // 순서 변경 적용
+                            product.getImageUrl(), // thumbNail -> imageUrl 수정
+                            product.getStartDate(),
+                            product.getEndDate(),
+                            product.getImagePaths()
+                    );
 
-                ))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                    List<String> base64images = new ArrayList<>();
+                    if (product.getImagePaths() != null && !product.getImagePaths().isEmpty()) {
+                        for (String imagePath : product.getImagePaths()) {
+                            try {
+                                Path filePath = Paths.get(uploadDir).resolve(imagePath).normalize();
+                                byte[] imageBytes = Files.readAllBytes(filePath);
+                                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                                base64images.add(base64Image);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        // 첫 번째 이미지를 썸네일 URL로 설정, 이미지가 존재하는 경우에만 설정
+                        if (!base64images.isEmpty()) {
+                            dto.setThumbnailUrl(base64images.get(0));
+                        }
+                    }
+                    dto.setBase64images(base64images); // Base64로 인코딩된 이미지 목록을 DTO에 설정
+
+                    return dto;
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)); // 상품을 찾을 수 없는 경우 예외 발생
     }
-
     public List<ProductResponseDto> getProductsByUserId(Long userId){
         return productRepository.findByUserUserId(userId).stream()
                 .filter(product -> product.getStock() > 0)

@@ -35,8 +35,8 @@ public class CartController {
             @Parameter(description = "장바구니에 추가할 상품 정보", required = true) @RequestBody CartItemDto cartItemDto,
              Principal principal) {
         String userEmail = principal.getName(); // Get the email of the logged-in user
-        cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
-        return ResponseEntity.ok("장바구니에 상품이 정상적으로 담겼습니다.");
+        Long cartItemId= cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
+        return ResponseEntity.ok("장바구니에 상품이 정상적으로 담겼습니다. CartItem ID: " + cartItemId);
     }
 
     @GetMapping("/cart/total-price/{userId}")

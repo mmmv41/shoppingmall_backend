@@ -104,21 +104,6 @@ public class ProductController {
     }
 
 
-//    @PostMapping("/products/register")
-//    @SecurityRequirement(name = "BearerAuth")
-//    @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
-//    public ProductDTO registerProduct(@ModelAttribute ProductDTO productDTO, @RequestParam("files") List<MultipartFile> files, Principal principal) throws IOException {
-//        String userEmail = principal.getName();
-//
-//        productDTO.setFiles(files);
-//
-//        ProductDTO registeredProduct = productService.registerProduct(userEmail, productDTO);
-//
-//        return registeredProduct;
-//    }
-
-
-
 
     @PutMapping("/products/{productId}")
     @SecurityRequirement(name = "BearerAuth")
