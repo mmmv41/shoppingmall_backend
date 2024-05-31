@@ -72,8 +72,8 @@ Authorization Beaber Token에
 
 - 쇼핑몰 전체 물건 조회 
 
-/api/products [get]   
-http://3.37.22.98:8080/api/products?page=2&sort=asc 
+/api/product [get]   
+http://3.37.22.98:8080/api/product?page=2&sort=asc 
 
 페이지당 8개의 상품 출력, 페이지는 0부터 시작 즉 page = 2는 3번째 페이지를 의미
 sort = asc -> 오름차순 sort = desc -> 내림차순
@@ -82,8 +82,8 @@ productStatus가 1인 물건만 조회가능
 
 - 쇼핑몰 상세 물건 조회 
 
-/api/products/{product_id} [get]
-http://3.37.22.98:8080/api/products/18
+/api/product/{product_id} [get]
+http://3.37.22.98:8080/api/product/18
 
 재고 0 이상인 물건만 조회 가능 
 
