@@ -4,6 +4,7 @@ import com.github.shopping_mall_be.domain.Product;
 import com.github.shopping_mall_be.dto.DetailProductDto;
 import com.github.shopping_mall_be.dto.Jwt.JwtProvider;
 import com.github.shopping_mall_be.dto.ProductDTO;
+import com.github.shopping_mall_be.dto.ProductPageResponseDto;
 import com.github.shopping_mall_be.dto.ProductResponseDto;
 import com.github.shopping_mall_be.repository.User.UserRepository;
 import com.github.shopping_mall_be.service.ProductService;
@@ -44,7 +45,7 @@ public class ProductController {
 
     @GetMapping("/product")
     @Operation(summary = "상품 목록 조회", description = "페이지와 정렬 방식에 따른 상품 목록을 조회합니다.")
-    public List<ProductResponseDto> getProducts(
+    public ProductPageResponseDto getProducts(
             @Parameter(description = "페이지 번호 (1부터 시작)") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 당 상품 수") @RequestParam(defaultValue = "8") int size,
             @Parameter(description = "정렬 방식 (asc: 오름차순, desc: 내림차순)") @RequestParam(defaultValue = "") String sort) {
@@ -60,7 +61,7 @@ public class ProductController {
     @GetMapping("/products/user/{userId}")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "사용자 ID로 상품 조회", description = "사용자 ID에 해당하는 사용자가 등록한 상품 목록을 조회합니다. 페이지와 정렬 방식에 따라 조회할 수 있습니다.")
-    public List<ProductResponseDto> getProductsByUserId(
+    public ProductPageResponseDto getProductsByUserId(
             @Parameter(description = "사용자 ID") @PathVariable Long userId,
             @Parameter(description = "페이지 번호 (1부터 시작)") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 당 상품 수") @RequestParam(defaultValue = "8") int size,

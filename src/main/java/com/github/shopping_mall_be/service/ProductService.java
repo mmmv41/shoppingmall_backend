@@ -5,6 +5,7 @@ import com.github.shopping_mall_be.domain.Product;
 import com.github.shopping_mall_be.domain.UserEntity;
 import com.github.shopping_mall_be.dto.DetailProductDto;
 import com.github.shopping_mall_be.dto.ProductDTO;
+import com.github.shopping_mall_be.dto.ProductPageResponseDto;
 import com.github.shopping_mall_be.dto.ProductResponseDto;
 import com.github.shopping_mall_be.repository.CartItemRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
@@ -56,11 +57,29 @@ public class ProductService {
     @Autowired
     private UserJpaRepository userJpaRepository;
 
-    public List<ProductResponseDto> getAvailableProducts(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page -1, size);
+
+
+    public ProductPageResponseDto getAvailableProducts(int page, int size, String sort) {
+        // 정렬 조건 설정
+        Sort sortBy = Sort.by("price");
+        if (sort.equals("asc")) {
+            sortBy = Sort.by(Sort.Direction.ASC, "price");
+        }
+        else if ("desc".equalsIgnoreCase(sort)) {
+            sortBy = Sort.by(Sort.Direction.DESC, "price");
+        }
+        else if ("enddate".equalsIgnoreCase(sort)) {
+            // enddate 가 가장 얼마 남지 않은 순 (오름차순)
+            sortBy = Sort.by(Sort.Direction.ASC, "endDate");
+        }
+        // Pageable 객체 생성 (페이지, 사이즈, 정렬 조건)
+        Pageable pageable = PageRequest.of(page - 1, size, sortBy);
+
+        // 데이터베이스에서 정렬 및 페이징 처리된 결과 조회
         Page<Product> productsPage = productRepository.findAllByStockGreaterThanAndProductStatus(0, 1, pageable);
-            // productStatus가 1인 물건만 조회가능
-        List<ProductResponseDto> productDtos = productsPage.stream().map(product -> {
+
+        // Product 엔티티를 ProductResponseDto로 변환
+        List<ProductResponseDto> productDtos = productsPage.getContent().stream().map(product -> {
             ProductResponseDto dto = new ProductResponseDto();
             dto.setProductId(product.getProductId());
             dto.setProductName(product.getProductName());
@@ -74,6 +93,7 @@ public class ProductService {
             dto.setProductStatus(product.getProductStatus());
             dto.setUserNickName(product.getUser().getUser_nickname());
 
+            // 이미지 파일을 Base64로 변환
             try {
                 Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
                 byte[] imageBytes = Files.readAllBytes(filePath);
@@ -83,17 +103,15 @@ public class ProductService {
                 e.printStackTrace();
             }
 
-
             return dto;
         }).collect(Collectors.toList());
 
-        if ("asc".equalsIgnoreCase(sort)) {
-            productDtos.sort(Comparator.comparing(ProductResponseDto::getPrice));
-        } else if ("desc".equalsIgnoreCase(sort)) {
-            productDtos.sort(Comparator.comparing(ProductResponseDto::getPrice).reversed());
-        }
 
-        return productDtos;
+        ProductPageResponseDto responseDto = new ProductPageResponseDto();
+        responseDto.setProducts(productDtos);
+        responseDto.setTotalPages(productsPage.getTotalPages());
+
+        return responseDto;
     }
 
 
@@ -141,10 +159,24 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)); // 상품을 찾을 수 없는 경우 예외 발생
     }
 
-    public List<ProductResponseDto> getProductsByUserId(Long userId, int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public ProductPageResponseDto getProductsByUserId(Long userId, int page, int size, String sort) {
+
+        Sort sortBy = Sort.by("price");
+        if (sort.equals("asc")) {
+            sortBy = Sort.by(Sort.Direction.ASC, "price");
+        }
+        else if ("desc".equalsIgnoreCase(sort)) {
+            sortBy = Sort.by(Sort.Direction.DESC, "price");
+        }
+        else if ("enddate".equalsIgnoreCase(sort)) {
+            // enddate 가 가장 얼마 남지 않은 순 (오름차순)
+            sortBy = Sort.by(Sort.Direction.ASC, "endDate");
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, size, sortBy);
         Page<Product> productsPage = productRepository.findByUserUserIdAndStockGreaterThanAndProductStatus(userId, 0, 1, pageable);
-        Stream<ProductResponseDto> productDtoStream = productsPage.stream().map(product -> {
+
+        List<ProductResponseDto> productDtoList = productsPage.stream().map(product -> {
             ProductResponseDto dto = new ProductResponseDto();
             dto.setProductId(product.getProductId());
             dto.setProductName(product.getProductName());
@@ -168,35 +200,16 @@ public class ProductService {
             }
 
             return dto;
-        });
+        }).collect(Collectors.toList());;
 
-        List<ProductResponseDto> sortedProductDtos;
-        if ("asc".equalsIgnoreCase(sort)) {
-            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getPrice)).collect(Collectors.toList());
-        } else if ("desc".equalsIgnoreCase(sort)) {
-            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getPrice).reversed()).collect(Collectors.toList());
-        } else if ("enddate".equalsIgnoreCase(sort)) {
-            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getEndDate)).collect(Collectors.toList());
-        } else {
-            // 기본적으로는 endDate로 오름차순 정렬
-            sortedProductDtos = productDtoStream.sorted(Comparator.comparing(ProductResponseDto::getEndDate)).collect(Collectors.toList());
-        }
+        ProductPageResponseDto responseDto = new ProductPageResponseDto();
+        responseDto.setProducts(productDtoList);
+        responseDto.setTotalPages(productsPage.getTotalPages());
 
-        return sortedProductDtos;
+        return responseDto;
     }
 
-    // 정렬 방식을 처리하는 메서드
-    private Sort sortOrder(String sort) {
-        switch (sort.toLowerCase()) {
-            case "asc":
-                return Sort.by("price").ascending();
-            case "desc":
-                return Sort.by("price").descending();
-            case "enddate":
-            default:
-                return Sort.by("endDate").ascending();
-        }
-    }
+
 
 
 
