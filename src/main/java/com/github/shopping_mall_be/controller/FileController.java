@@ -1,6 +1,11 @@
+
+
 package com.github.shopping_mall_be.controller;
 
+import com.github.shopping_mall_be.repository.ProductRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -18,11 +23,15 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
 
+    @Autowired
+    ProductRepository productRepository;
     @Value("${upload.dir}")
     private String uploadDir;
 
@@ -35,6 +44,7 @@ public class FileController {
         }
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
@@ -54,4 +64,3 @@ public class FileController {
         }
     }
 }
-

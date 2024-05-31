@@ -3,6 +3,7 @@
 package com.github.shopping_mall_be.controller;
 
 import com.github.shopping_mall_be.domain.CartItem;
+import com.github.shopping_mall_be.dto.CartImageDto;
 import com.github.shopping_mall_be.dto.CartItemDto;
 import com.github.shopping_mall_be.dto.CartTotalPriceDto;
 import com.github.shopping_mall_be.service.CartService;
@@ -17,7 +18,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,15 +31,19 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+
     @PostMapping("/cart")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "장바구니에 상품 추가", description = "사용자의 장바구니에 상품을 추가합니다.")
     public ResponseEntity<?> addItemToCart(
             @Parameter(description = "장바구니에 추가할 상품 정보", required = true) @RequestBody CartItemDto cartItemDto,
-             Principal principal) {
-        String userEmail = principal.getName(); // Get the email of the logged-in user
-        cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
-        return ResponseEntity.ok("장바구니에 상품이 정상적으로 담겼습니다.");
+            Principal principal) {
+        String userEmail = principal.getName();
+        Long cartItemId = cartService.addItemToCart(userEmail, cartItemDto.getProductId(), cartItemDto.getQuantity());
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "장바구니에 상품이 정상적으로 담겼습니다.");
+        response.put("cartItemId", cartItemId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/cart/total-price/{userId}")
@@ -63,6 +70,7 @@ public class CartController {
                     dto.setUserNickname(item.getUser().getUser_nickname());
                     dto.setPrice(item.getProduct().getPrice());
                     dto.setProductName(item.getProduct().getProductName());
+
 
                     return dto;
                 }).collect(Collectors.toList());
@@ -91,7 +99,7 @@ public class CartController {
     @GetMapping("/cart/{userId}")
     @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "특정 사용자의 장바구니 항목 조회", description = "userId에 따라 특정 사용자의 장바구니 항목을 조회합니다.")
-    public List<CartItemDto> getCartItems(
+    public List<CartImageDto> getCartItems(
             @Parameter(description = "사용자 ID", required = true) @PathVariable Long userId) {
         return cartService.getCartItemsByUserId(userId);
     }

@@ -31,7 +31,7 @@ OncePerRequestFilter -->
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String[] whitelist = {"/api/signup", "/api/logout","/api/login", "/swagger-ui/**", "/swagger-ui/index.html","/error","/v3/**","/api/product/**","api/product"};
+    private static final String[] whitelist = {"/api/signup", "/api/logout","/api/login", "/swagger-ui/**", "/swagger-ui/index.html","/error","/v3/**","/api/product/**","/api/product" , "/api/files/**" };
     private final JwtProvider jwtProvider;
     private final JwtService jwtService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();

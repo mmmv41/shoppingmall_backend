@@ -5,6 +5,7 @@ import com.github.shopping_mall_be.domain.Product;
 import com.github.shopping_mall_be.domain.UserEntity;
 import com.github.shopping_mall_be.dto.DetailProductDto;
 import com.github.shopping_mall_be.dto.ProductDTO;
+import com.github.shopping_mall_be.dto.ProductPageResponseDto;
 import com.github.shopping_mall_be.dto.ProductResponseDto;
 import com.github.shopping_mall_be.repository.CartItemRepository;
 import com.github.shopping_mall_be.repository.ProductRepository;
@@ -13,6 +14,7 @@ import com.github.shopping_mall_be.repository.User.UserRepository;
 import com.github.shopping_mall_be.util.FileStorageUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +26,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProductService {
+
+
+    @Value("${UPLOAD_DIR}")
+    private String uploadDir;
 
     @Autowired
     private FileStorageUtil fileStorageUtil;
@@ -50,11 +57,29 @@ public class ProductService {
     @Autowired
     private UserJpaRepository userJpaRepository;
 
-    public List<ProductResponseDto> getAvailableProducts(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page, size);
+
+
+    public ProductPageResponseDto getAvailableProducts(int page, int size, String sort) {
+        // 정렬 조건 설정
+        Sort sortBy = Sort.by("price");
+        if (sort.equals("asc")) {
+            sortBy = Sort.by(Sort.Direction.ASC, "price");
+        }
+        else if ("desc".equalsIgnoreCase(sort)) {
+            sortBy = Sort.by(Sort.Direction.DESC, "price");
+        }
+        else if ("enddate".equalsIgnoreCase(sort)) {
+            // enddate 가 가장 얼마 남지 않은 순 (오름차순)
+            sortBy = Sort.by(Sort.Direction.ASC, "endDate");
+        }
+        // Pageable 객체 생성 (페이지, 사이즈, 정렬 조건)
+        Pageable pageable = PageRequest.of(page - 1, size, sortBy);
+
+        // 데이터베이스에서 정렬 및 페이징 처리된 결과 조회
         Page<Product> productsPage = productRepository.findAllByStockGreaterThanAndProductStatus(0, 1, pageable);
-// productStatus가 1인 물건만 조회가능
-        List<ProductResponseDto> productDtos = productsPage.stream().map(product -> {
+
+        // Product 엔티티를 ProductResponseDto로 변환
+        List<ProductResponseDto> productDtos = productsPage.getContent().stream().map(product -> {
             ProductResponseDto dto = new ProductResponseDto();
             dto.setProductId(product.getProductId());
             dto.setProductName(product.getProductName());
@@ -67,106 +92,173 @@ public class ProductService {
             dto.setImageUrl(product.getImageUrl());
             dto.setProductStatus(product.getProductStatus());
             dto.setUserNickName(product.getUser().getUser_nickname());
+
+            // 이미지 파일을 Base64로 변환
+            try {
+                Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
+                byte[] imageBytes = Files.readAllBytes(filePath);
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                dto.setImageBase64(base64Image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return dto;
         }).collect(Collectors.toList());
 
-        if ("asc".equalsIgnoreCase(sort)) {
-            productDtos.sort(Comparator.comparing(ProductResponseDto::getPrice));
-        } else if ("desc".equalsIgnoreCase(sort)) {
-            productDtos.sort(Comparator.comparing(ProductResponseDto::getPrice).reversed());
-        }
 
-        return productDtos;
+        ProductPageResponseDto responseDto = new ProductPageResponseDto();
+        responseDto.setProducts(productDtos);
+        responseDto.setTotalPages(productsPage.getTotalPages());
+
+        return responseDto;
     }
 
 
     public DetailProductDto getProductById(Long productId) {
         return productRepository.findById(productId)
                 .filter(product -> product.getStock() > 0)
-                .map(product -> new DetailProductDto(
-                        product.getProductId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getUser().getUser_nickname(),
-                        product.getProductOption(),
-                        product.getStartDate(),
-                        product.getEndDate(),
-                        product.getProductStatus(),
-                        product.getImagePaths()
-                ))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .map(product -> {
+                    // DetailProductDto 생성자를 사용해 초기화
+                    DetailProductDto dto = new DetailProductDto(
+                            product.getProductId(),
+                            product.getProductName(),
+                            product.getDescription(),
+                            product.getPrice(),
+                            product.getStock(),
+                            product.getUser().getUser_nickname(), // getUser_nickname() -> getUserNickName() 수정
+                            product.getProductOption(),
+                            product.getProductStatus(), // 순서 변경 적용
+                            product.getImageUrl(), // thumbNail -> imageUrl 수정
+                            product.getStartDate(),
+                            product.getEndDate(),
+                            product.getImagePaths()
+                    );
+
+                    List<String> base64images = new ArrayList<>();
+                    if (product.getImagePaths() != null && !product.getImagePaths().isEmpty()) {
+                        for (String imagePath : product.getImagePaths()) {
+                            try {
+                                Path filePath = Paths.get(uploadDir).resolve(imagePath).normalize();
+                                byte[] imageBytes = Files.readAllBytes(filePath);
+                                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                                base64images.add(base64Image);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        // 첫 번째 이미지를 썸네일 URL로 설정, 이미지가 존재하는 경우에만 설정
+                        if (!base64images.isEmpty()) {
+                            dto.setThumbnailUrl(base64images.get(0));
+                        }
+                    }
+                    dto.setBase64images(base64images); // Base64로 인코딩된 이미지 목록을 DTO에 설정
+
+                    return dto;
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)); // 상품을 찾을 수 없는 경우 예외 발생
     }
 
-    public List<ProductResponseDto> getProductsByUserId(Long userId){
-        return productRepository.findByUserUserId(userId).stream()
-                .filter(product -> product.getStock() > 0)
-                .filter(product -> product.getProductStatus() == 1) // productStatus가 1인 제품만 필터링
-                .sorted(Comparator.comparing(Product::getEndDate)) // endDate로 정렬
-                .map(product -> new ProductResponseDto(
-                        product.getProductId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getImageUrl(),
-                        product.getUser().getUser_nickname(),
-                        product.getProductOption(),
-                        product.getProductStatus(),
-                        product.getStartDate(),
-                        product.getEndDate()
-                )).collect(Collectors.toList());
+    public ProductPageResponseDto getProductsByUserId(Long userId, int page, int size, String sort) {
+
+        Sort sortBy = Sort.by("price");
+        if (sort.equals("asc")) {
+            sortBy = Sort.by(Sort.Direction.ASC, "price");
+        }
+        else if ("desc".equalsIgnoreCase(sort)) {
+            sortBy = Sort.by(Sort.Direction.DESC, "price");
+        }
+        else if ("enddate".equalsIgnoreCase(sort)) {
+            // enddate 가 가장 얼마 남지 않은 순 (오름차순)
+            sortBy = Sort.by(Sort.Direction.ASC, "endDate");
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, size, sortBy);
+        Page<Product> productsPage = productRepository.findByUserUserIdAndStockGreaterThanAndProductStatus(userId, 0, 1, pageable);
+
+        List<ProductResponseDto> productDtoList = productsPage.stream().map(product -> {
+            ProductResponseDto dto = new ProductResponseDto();
+            dto.setProductId(product.getProductId());
+            dto.setProductName(product.getProductName());
+            dto.setDescription(product.getDescription());
+            dto.setPrice(product.getPrice());
+            dto.setStock(product.getStock());
+            dto.setImageUrl(product.getImageUrl());
+            dto.setUserNickName(product.getUser().getUser_nickname());
+            dto.setProductOption(product.getProductOption());
+            dto.setProductStatus(product.getProductStatus());
+            dto.setStartDate(product.getStartDate());
+            dto.setEndDate(product.getEndDate());
+
+            try {
+                Path filePath = Paths.get(uploadDir).resolve(product.getImageUrl()).normalize();
+                byte[] imageBytes = Files.readAllBytes(filePath);
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                dto.setImageBase64(base64Image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return dto;
+        }).collect(Collectors.toList());;
+
+        ProductPageResponseDto responseDto = new ProductPageResponseDto();
+        responseDto.setProducts(productDtoList);
+        responseDto.setTotalPages(productsPage.getTotalPages());
+
+        return responseDto;
     }
+
+
 
 
 
     public ProductDTO registerProduct(String email,ProductDTO productDTO) throws IOException {
-            validateProductInfo(productDTO);
-            UserEntity user = userRepository.findByEmail2(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+        validateProductInfo(productDTO);
+        UserEntity user = userRepository.findByEmail2(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-            List<MultipartFile> files = productDTO.getFiles() != null ? productDTO.getFiles() : new ArrayList<>();
+        List<MultipartFile> files = productDTO.getFiles() != null ? productDTO.getFiles() : new ArrayList<>();
 
-            List<String> imagePaths = files.stream()
-                    .map(file -> {
-                        try {
-                            return fileStorageUtil.storeFile(file);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Failed to store file: " + file.getOriginalFilename(), e);
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-
-            // 상품 정보 설정
-            Product product = new Product();
-            product.setProductName(productDTO.getProductName());
-            product.setPrice(productDTO.getPrice());
-            product.setDescription(productDTO.getDescription());
-            product.setStock(productDTO.getStock());
-            product.setStartDate(productDTO.getStartDate());
-            product.setEndDate(productDTO.getEndDate());
-            product.setDescription(productDTO.getDescription());
-            product.setProductOption(productDTO.getProductOption());
-            product.setUser(user);
-            productDTO.setUserNickName(productDTO.getUserNickName());
-
-            Date now = new Date();
-            product.setProductStatus(product.getEndDate().compareTo(now) >= 0 ? 1 : 0);
+        List<String> imagePaths = files.stream()
+                .map(file -> {
+                    try {
+                        return fileStorageUtil.storeFile(file);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to store file: " + file.getOriginalFilename(), e);
+                    }
+                })
+                .collect(Collectors.toList());
 
 
-            // 첫 번째 이미지 경로를 imageUrl에 설정
-            if (!imagePaths.isEmpty()) {
-                product.setImageUrl(imagePaths.get(0)); // 첫 번째 이미지 경로를 imageUrl에 설정
-            }
+        // 상품 정보 설정
+        Product product = new Product();
+        product.setProductName(productDTO.getProductName());
+        product.setPrice(productDTO.getPrice());
+        product.setDescription(productDTO.getDescription());
+        product.setStock(productDTO.getStock());
+        product.setStartDate(productDTO.getStartDate());
+        product.setEndDate(productDTO.getEndDate());
+        product.setDescription(productDTO.getDescription());
+        product.setProductOption(productDTO.getProductOption());
+        product.setUser(user);
+        productDTO.setUserNickName(productDTO.getUserNickName());
 
-            imagePaths.forEach(product::addImage);  // 각 이미지 경로를 Product에 추가
-            // 상품 등록
-            Product registeredProduct = productRepository.save(product);
-            // 등록된 상품 정보를 DTO로 변환하여 반환
-            return new ProductDTO(registeredProduct);
+        Date now = new Date();
+        product.setProductStatus(product.getEndDate().compareTo(now) >= 0 ? 1 : 0);
+
+
+        // 첫 번째 이미지 경로를 imageUrl에 설정
+        if (!imagePaths.isEmpty()) {
+            product.setImageUrl(imagePaths.get(0)); // 첫 번째 이미지 경로를 imageUrl에 설정
         }
+
+        imagePaths.forEach(product::addImage);  // 각 이미지 경로를 Product에 추가
+        // 상품 등록
+        Product registeredProduct = productRepository.save(product);
+        // 등록된 상품 정보를 DTO로 변환하여 반환
+        return new ProductDTO(registeredProduct);
+    }
     private void validateProductInfo(ProductDTO productDTO) {
         // 필요한 모든 상품 정보가 입력되었는지 확인하는 로직 추가
         // 예: productName, price, startDate, endDate, description 등
@@ -267,6 +359,3 @@ public class ProductService {
         return new ProductDTO(updatedProduct);
     }
 }
-
-
-

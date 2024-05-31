@@ -27,10 +27,6 @@ public class FileStorageUtil {
             throw new IllegalArgumentException("File is empty");
         }
 
-//        if (isMaxImageCountReached()) {
-//            throw new IllegalStateException("Maximum image count reached");
-//        }
-
         // Generate random file name to prevent duplicate file names
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
         Path copyLocation = Paths.get(uploadDir + File.separator + fileName);

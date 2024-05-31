@@ -50,6 +50,7 @@ public class Product {
     @Temporal(TemporalType.DATE)
     private Date endDate;
 
+
     @ElementCollection // 여러 이미지 경로를 저장하기 위해 사용. 컬렉션 매핑
     @CollectionTable(name = "ProductImage", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_path")
